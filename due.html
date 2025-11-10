@@ -164,11 +164,11 @@
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
                 <div class="mb-6">
-                    <label class="block text-gray-700 font-semibold mb-2">Status *</label>
-                    <select id="dueStatus" required
+                    <label class="block text-gray-700 font-semibold mb-2">Payment Type</label>
+                    <select id="dueStatus"
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <option value="Pending">Pending</option>
-                        <option value="Paid">Paid</option>
+                        <option value="Partial">Partial Payment</option>
+                        <option value="Full">Full Payment</option>
                     </select>
                 </div>
                 <div class="flex justify-end gap-4">
@@ -210,7 +210,7 @@
             document.getElementById('paidDuesCount').textContent = paidCount;
         }
 
-        function displayDues(duesToShow = dueAmounts) {
+        function displayDues(duesToShow = dueAmounts.filter(d => d.status === 'Pending')) {
             const tbody = document.getElementById('dueTable');
             if (duesToShow.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No due amounts found</td></tr>';
@@ -271,32 +271,65 @@
             event.preventDefault();
 
             const dueId = document.getElementById('updateDueId').value;
-            const newStatus = document.getElementById('dueStatus').value;
             const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
             const paymentDateTime = document.getElementById('paymentDateTime').value;
+            const paymentType = document.getElementById('dueStatus').value; // Partial or Full
 
             const dueIndex = dueAmounts.findIndex(d => d.id === dueId);
             if (dueIndex !== -1) {
                 const due = dueAmounts[dueIndex];
 
-                // Add payment record
+                // Add payment record to due
                 if (!due.payments) {
                     due.payments = [];
                 }
                 due.payments.push({
                     amount: paymentAmount,
                     dateTime: paymentDateTime || new Date().toISOString(),
-                    status: newStatus
+                    type: paymentType
                 });
 
-                // Update due amount based on payment
-                if (newStatus === 'Paid') {
-                    due.dueAmount = 0; // Fully paid
-                } else if (newStatus === 'Pending') {
-                    due.dueAmount -= paymentAmount; // Reduce due by payment amount
+                // Always add payment to customer's dueHistory
+                const customers = JSON.parse(localStorage.getItem('customers')) || [];
+                let customer = customers.find(c => c.name === due.farmerName);
+                if (!customer) {
+                    // Create customer if not exists
+                    customer = {
+                        id: Date.now().toString(),
+                        name: due.farmerName,
+                        phone: '',
+                        village: '',
+                        address: '',
+                        totalPurchases: 0,
+                        lastPurchase: null,
+                        dueHistory: []
+                    };
+                    customers.push(customer);
+                }
+                customer.dueHistory = customer.dueHistory || [];
+                customer.dueHistory.push({
+                    billId: due.billId,
+                    paymentAmount: paymentAmount,
+                    paymentDate: paymentDateTime || new Date().toISOString(),
+                    paymentType: paymentType,
+                    remainingDue: due.dueAmount - paymentAmount
+                });
+                localStorage.setItem('customers', JSON.stringify(customers));
+
+                // Reduce due amount by payment
+                due.dueAmount -= paymentAmount;
+
+                // If full payment or due amount becomes zero or negative, mark as fully paid and remove from dueAmounts
+                if (paymentType === 'Full' || due.dueAmount <= 0) {
+                    due.dueAmount = 0;
+                    due.status = 'Paid';
+                    // Remove from dueAmounts
+                    dueAmounts.splice(dueIndex, 1);
+                } else {
+                    // Still pending with reduced amount
+                    due.status = 'Pending';
                 }
 
-                due.status = newStatus;
                 localStorage.setItem('dueAmounts', JSON.stringify(dueAmounts));
                 displayDues();
                 displayDueSummary();
@@ -309,7 +342,7 @@
             const searchTerm = document.getElementById('searchDue').value.toLowerCase();
             const status = document.getElementById('filterDueStatus').value;
 
-            let filtered = dueAmounts;
+            let filtered = dueAmounts.filter(d => d.status === 'Pending'); // Only show pending by default
 
             if (searchTerm) {
                 filtered = filtered.filter(d =>
@@ -318,7 +351,12 @@
             }
 
             if (status) {
-                filtered = filtered.filter(d => d.status === status);
+                filtered = dueAmounts.filter(d => d.status === status); // Show all if status filter is applied
+                if (searchTerm) {
+                    filtered = filtered.filter(d =>
+                        d.farmerName.toLowerCase().includes(searchTerm)
+                    );
+                }
             }
 
             displayDues(filtered);

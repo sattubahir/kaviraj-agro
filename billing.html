@@ -185,6 +185,12 @@
                                 <span>Sub Total:</span>
                                 <span id="subTotal">₹0.00</span>
                             </div>
+                            <div class="flex justify-between font-medium">
+                                <span>Discount (₹):</span>
+                                <input type="number" id="discountAmount" min="0" step="0.01" value="0"
+                                    class="w-20 text-right border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    oninput="calculateGrandTotal()">
+                            </div>
                             <div class="flex justify-between font-medium border-t pt-3">
                                 <span class="text-lg font-bold text-green-700">Grand Total:</span>
                                 <span id="grandTotal" class="text-lg font-bold text-green-700">₹0.00</span>
@@ -452,7 +458,7 @@
             if (billItems.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No items added to the bill yet.</td></tr>';
                 document.getElementById('subTotal').textContent = formatter.format(0);
-                document.getElementById('grandTotal').textContent = formatter.format(0);
+                calculateGrandTotal();
                 savePrintButton.disabled = true;
                 return;
             }
@@ -476,8 +482,16 @@
             }).join('');
 
             document.getElementById('subTotal').textContent = formatter.format(subTotal);
-            document.getElementById('grandTotal').textContent = formatter.format(subTotal);
+            calculateGrandTotal();
             savePrintButton.disabled = false;
+        }
+
+        function calculateGrandTotal() {
+            const subTotalText = document.getElementById('subTotal').textContent.replace('₹', '').replace(/,/g, '');
+            const subTotal = parseFloat(subTotalText) || 0;
+            const discount = parseFloat(document.getElementById('discountAmount').value) || 0;
+            const grandTotal = Math.max(0, subTotal - discount);
+            document.getElementById('grandTotal').textContent = formatter.format(grandTotal);
         }
 
         function searchCustomers() {
@@ -547,6 +561,7 @@
                 document.getElementById('customerPhone').value = '';
                 document.getElementById('customerVillage').value = '';
                 document.getElementById('billDate').valueAsDate = new Date();
+                document.getElementById('discountAmount').value = '0';
                 document.querySelector('input[name="paymentType"][value="full"]').checked = true;
                 toggleDueAmount();
                 renderBillItems();
@@ -582,8 +597,10 @@
         function saveAndPrintBill() {
             const customerName = document.getElementById('customerName').value.trim();
             const billDate = document.getElementById('billDate').value;
-            const grandTotalElement = document.getElementById('grandTotal').textContent.replace('₹', '').replace(/,/g, '');
-            const grandTotal = parseFloat(grandTotalElement);
+            const subTotalElement = document.getElementById('subTotal').textContent.replace('₹', '').replace(/,/g, '');
+            const subTotal = parseFloat(subTotalElement);
+            const discount = parseFloat(document.getElementById('discountAmount').value) || 0;
+            const grandTotal = Math.max(0, subTotal - discount);
             const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
             const dueAmount = paymentType === 'due' ? parseFloat(document.getElementById('dueAmount').value) || 0 : 0;
 
@@ -610,6 +627,8 @@
                 customerName: customerName,
                 date: billDate || new Date().toISOString().substring(0, 10),
                 items: JSON.parse(JSON.stringify(billItems)), // Deep copy
+                subTotal: subTotal,
+                discount: discount,
                 total: grandTotal,
                 paymentType: paymentType,
                 dueAmount: dueAmount,
@@ -628,14 +647,33 @@
             // If there's a due amount, save to dueAmounts
             if (dueAmount > 0) {
                 const dueAmounts = JSON.parse(localStorage.getItem('dueAmounts')) || [];
-                dueAmounts.push({
-                    id: 'DUE-' + Date.now(),
-                    billId: billNo,
-                    farmerName: customerName,
-                    dueAmount: dueAmount,
-                    date: billDate || new Date().toISOString().substring(0, 10),
-                    status: 'Pending'
-                });
+                // Check if there's already a pending due for this customer
+                const existingDue = dueAmounts.find(due => due.farmerName === customerName && due.status === 'Pending');
+                if (existingDue) {
+                    // Add to existing due
+                    existingDue.dueAmount += dueAmount;
+                    existingDue.bills = existingDue.bills || [];
+                    existingDue.bills.push({
+                        billId: billNo,
+                        amount: dueAmount,
+                        date: billDate || new Date().toISOString().substring(0, 10)
+                    });
+                } else {
+                    // Create new due entry
+                    dueAmounts.push({
+                        id: 'DUE-' + Date.now(),
+                        billId: billNo,
+                        farmerName: customerName,
+                        dueAmount: dueAmount,
+                        date: billDate || new Date().toISOString().substring(0, 10),
+                        status: 'Pending',
+                        bills: [{
+                            billId: billNo,
+                            amount: dueAmount,
+                            date: billDate || new Date().toISOString().substring(0, 10)
+                        }]
+                    });
+                }
                 localStorage.setItem('dueAmounts', JSON.stringify(dueAmounts));
             }
 
@@ -658,10 +696,10 @@
             document.getElementById('printGrandTotal').textContent = formatter.format(bill.total);
 
             let printTbody = document.getElementById('printBillItemsTable');
-            let printSubTotal = 0;
+            let printSubTotal = bill.subTotal || bill.items.reduce((sum, item) => sum + item.total, 0);
+            let discount = bill.discount || 0;
 
             printTbody.innerHTML = bill.items.map(item => {
-                printSubTotal += item.total;
                 return `
                     <tr>
                         <td class="text-left py-1 px-1">${item.name}</td>
@@ -673,6 +711,16 @@
                 `;
             }).join('');
             document.getElementById('printSubTotal').textContent = formatter.format(printSubTotal);
+
+            // Add discount row if discount > 0
+            if (discount > 0) {
+                const discountRow = document.createElement('tr');
+                discountRow.innerHTML = `
+                    <td colspan="4" class="text-right py-1 px-1 font-semibold">Discount:</td>
+                    <td class="text-right py-1 px-1 font-semibold">-${formatter.format(discount)}</td>
+                `;
+                printTbody.appendChild(discountRow);
+            }
         }
 
         // --- Saved Bills Modal Functions ---
