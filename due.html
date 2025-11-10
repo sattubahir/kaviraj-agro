@@ -250,7 +250,11 @@
                 document.getElementById('updateFarmerName').value = due.farmerName;
                 document.getElementById('updateDueAmount').value = '₹' + due.dueAmount.toFixed(2);
                 document.getElementById('paymentAmount').value = due.dueAmount; // Default to full due amount
-                document.getElementById('paymentDateTime').value = new Date().toISOString().slice(0, 16); // Current date/time
+                // Set current Indian time (IST = UTC+5:30)
+                const now = new Date();
+                const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+                const istTime = new Date(now.getTime() + istOffset);
+                document.getElementById('paymentDateTime').value = istTime.toISOString().slice(0, 16);
                 document.getElementById('dueStatus').value = due.status;
                 document.getElementById('updateDueModal').classList.remove('hidden');
                 document.getElementById('updateDueModal').classList.add('flex');
