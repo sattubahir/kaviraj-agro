@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Kaviraj Agro Agency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-green-800 text-white fixed h-full">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold mb-2">🌾Kaviraj Agro Agency</h1>
+                <p class="text-green-200 text-sm">Management</p>
+            </div>
+            <nav class="mt-6">
+                <a href="index.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-dashboard mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="products.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                    <i class="fas fa-box mr-3"></i>
+                    Products
+                </a>
+                <a href="stock.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-warehouse mr-3"></i>
+                    Stock
+                </a>
+                <a href="billing.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-receipt mr-3"></i>
+                    Billing
+                </a>
+                <a href="due.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-money-bill-wave mr-3"></i>
+                    Due Amounts
+                </a>
+                <a href="customers.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-users mr-3"></i>
+                    Customers
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 p-8 overflow-y-auto">
+            <header class="mb-8 flex justify-between items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Products</h2>
+                    <p class="text-gray-600">Manage your product inventory</p>
+                </div>
+                <button onclick="openAddModal()"
+                    class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Product
+                </button>
+            </header>
+
+            <!-- Search and Filter -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="searchProduct" placeholder="Search products..."
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <select id="filterCategory"
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">All Categories</option>
+                        <option value="Seeds">Seeds</option>
+                        <option value="Fertilizers">Fertilizers</option>
+                        <option value="Pesticides">Pesticides</option>
+                        <option value="Tools">Tools</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <button onclick="searchProducts()"
+                        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Products Table -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Product Name</th>
+                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Category</th>
+                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Company</th>
+                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Packing</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Price</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Stock</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTable">
+                            <tr>
+                                <td colspan="7" class="text-center py-8 text-gray-500">No products found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800" id="modalTitle">Add New Product</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <input type="hidden" id="productId">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Product Name *</label>
+                        <input type="text" id="productName" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Category *</label>
+                        <select id="productCategory" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select Category</option>
+                            <option value="Seeds">Seeds</option>
+                            <option value="Fertilizers">Fertilizers</option>
+                            <option value="Pesticides">Pesticides</option>
+                             <option value="Pesticides">Fungicides</option>
+                              <option value="Pesticides">Herbicides</option>
+                               <option value="Pesticides">Growth Regulators</option>
+                                <option value="Pesticides">Water Solubles</option>
+                            <option value="Tools">Tools</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Company *</label>
+                        <input type="text" id="productCompany" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Packing *</label>
+                        <input type="text" id="productPacking" required placeholder="e.g., 1kg, 500g"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Price (₹) *</label>
+                        <input type="number" id="productPrice" required step="0.01" min="0"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Stock Quantity *</label>
+                        <input type="number" id="productStock" required min="0"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-4">
+                    <button type="button" onclick="closeModal()"
+                        class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Save
+                        Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let editingId = null;
+
+        function displayProducts(productsToShow = products) {
+            const tbody = document.getElementById('productsTable');
+            if (productsToShow.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-500">No products found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = productsToShow.map(product => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 px-6">${product.name}</td>
+                    <td class="py-4 px-6">
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">${product.category}</span>
+                    </td>
+                    <td class="py-4 px-6">${product.company}</td>
+                    <td class="py-4 px-6">${product.packing}</td>
+                    <td class="py-4 px-6 text-center font-semibold">₹${product.price}</td>
+                    <td class="py-4 px-6 text-center">
+                        <span class="${product.stock < 10 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'} px-3 py-1 rounded-full font-semibold">
+                            ${product.stock}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-center">
+                        <button onclick="editProduct('${product.id}')" class="text-blue-600 hover:text-blue-800 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteProduct('${product.id}')" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Product';
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').value = '';
+            editingId = null;
+            document.getElementById('productModal').classList.remove('hidden');
+            document.getElementById('productModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.add('hidden');
+            document.getElementById('productModal').classList.remove('flex');
+        }
+
+        function saveProduct(event) {
+            event.preventDefault();
+
+            const product = {
+                id: editingId || Date.now().toString(),
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                company: document.getElementById('productCompany').value,
+                packing: document.getElementById('productPacking').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                stock: parseInt(document.getElementById('productStock').value)
+            };
+
+            if (editingId) {
+                const index = products.findIndex(p => p.id === editingId);
+                products[index] = product;
+            } else {
+                products.push(product);
+            }
+
+            localStorage.setItem('products', JSON.stringify(products));
+            displayProducts();
+            closeModal();
+            alert(editingId ? 'Product updated successfully!' : 'Product added successfully!');
+        }
+
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                editingId = id;
+                document.getElementById('modalTitle').textContent = 'Edit Product';
+                document.getElementById('productId').value = product.id;
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productCategory').value = product.category;
+                document.getElementById('productCompany').value = product.company;
+                document.getElementById('productPacking').value = product.packing;
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productStock').value = product.stock;
+                document.getElementById('productModal').classList.remove('hidden');
+                document.getElementById('productModal').classList.add('flex');
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('products', JSON.stringify(products));
+                displayProducts();
+                alert('Product deleted successfully!');
+            }
+        }
+
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchProduct').value.toLowerCase();
+            const category = document.getElementById('filterCategory').value;
+
+            let filtered = products;
+
+            if (searchTerm) {
+                filtered = filtered.filter(p =>
+                    p.name.toLowerCase().includes(searchTerm) ||
+                    p.company.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (category) {
+                filtered = filtered.filter(p => p.category === category);
+            }
+
+            displayProducts(filtered);
+        }
+
+        // Initialize
+        displayProducts();
+
+        // Search on input
+        document.getElementById('searchProduct').addEventListener('input', searchProducts);
+        document.getElementById('filterCategory').addEventListener('change', searchProducts);
+    </script>
+</body>
+
+</html>

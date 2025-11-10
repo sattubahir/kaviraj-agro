@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Due Amounts - Kaviraj Agro Agency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-green-800 text-white fixed h-full">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold mb-2">🌾Kaviraj Agro Agency</h1>
+                <p class="text-green-200 text-sm">Management</p>
+            </div>
+            <nav class="mt-6">
+                <a href="index.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-dashboard mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="products.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-box mr-3"></i>
+                    Products
+                </a>
+                <a href="stock.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-warehouse mr-3"></i>
+                    Stock
+                </a>
+                <a href="billing.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-receipt mr-3"></i>
+                    Billing
+                </a>
+                <a href="due.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                    <i class="fas fa-money-bill-wave mr-3"></i>
+                    Due Amounts
+                </a>
+                <a href="customers.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-users mr-3"></i>
+                    Customers
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 ml-64 p-8 overflow-y-auto">
+            <header class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Due Amounts</h2>
+                <p class="text-gray-600">Manage outstanding payments from customers</p>
+            </header>
+
+            <!-- Due Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Total Due Amount</p>
+                            <h3 class="text-2xl font-bold text-red-600" id="totalDueAmount">₹0</h3>
+                        </div>
+                        <div class="bg-red-100 p-3 rounded-full">
+                            <i class="fas fa-rupee-sign text-red-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Pending Dues</p>
+                            <h3 class="text-2xl font-bold text-orange-600" id="pendingDuesCount">0</h3>
+                        </div>
+                        <div class="bg-orange-100 p-3 rounded-full">
+                            <i class="fas fa-clock text-orange-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Paid Dues</p>
+                            <h3 class="text-2xl font-bold text-green-600" id="paidDuesCount">0</h3>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="searchDue" placeholder="Search by farmer name..."
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <select id="filterDueStatus"
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Paid">Paid</option>
+                    </select>
+                    <button onclick="searchDues()"
+                        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Due Amounts Table -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Farmer Name</th>
+                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Bill ID</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Due Amount</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Date</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Status</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dueTable">
+                            <tr>
+                                <td colspan="6" class="text-center py-8 text-gray-500">No due amounts found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Update Due Modal -->
+    <div id="updateDueModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Update Due Status</h3>
+                <button onclick="closeDueModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <form id="dueUpdateForm" onsubmit="updateDueStatus(event)">
+                <input type="hidden" id="updateDueId">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Farmer Name</label>
+                    <input type="text" id="updateFarmerName" readonly
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Due Amount</label>
+                    <input type="text" id="updateDueAmount" readonly
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Payment Amount *</label>
+                    <input type="number" id="paymentAmount" step="0.01" min="0" required
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Payment Date & Time</label>
+                    <input type="datetime-local" id="paymentDateTime"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">Status *</label>
+                    <select id="dueStatus" required
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="Pending">Pending</option>
+                        <option value="Paid">Paid</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" onclick="closeDueModal()"
+                        class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Update
+                        Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment History Modal -->
+    <div id="paymentHistoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Payment History</h3>
+                <button onclick="closePaymentHistoryModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div id="paymentHistoryContent">
+                <!-- Payment history will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dueAmounts = JSON.parse(localStorage.getItem('dueAmounts')) || [];
+
+        function displayDueSummary() {
+            const totalDue = dueAmounts.reduce((sum, due) => sum + (due.status === 'Pending' ? due.dueAmount : 0), 0);
+            const pendingCount = dueAmounts.filter(due => due.status === 'Pending').length;
+            const paidCount = dueAmounts.filter(due => due.status === 'Paid').length;
+
+            document.getElementById('totalDueAmount').textContent = '₹' + totalDue.toFixed(2);
+            document.getElementById('pendingDuesCount').textContent = pendingCount;
+            document.getElementById('paidDuesCount').textContent = paidCount;
+        }
+
+        function displayDues(duesToShow = dueAmounts) {
+            const tbody = document.getElementById('dueTable');
+            if (duesToShow.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No due amounts found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = duesToShow.map(due => {
+                const statusClass = due.status === 'Pending' ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800';
+                return `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-4 px-6 font-semibold">${due.farmerName}</td>
+                        <td class="py-4 px-6">${due.billId}</td>
+                        <td class="py-4 px-6 text-center font-semibold">₹${due.dueAmount.toFixed(2)}</td>
+                        <td class="py-4 px-6 text-center">${due.date}</td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="${statusClass} px-3 py-1 rounded-full text-sm font-semibold">
+                                ${due.status}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            <button onclick="openDueModal('${due.id}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm mr-2">
+                                <i class="fas fa-edit mr-1"></i>Update
+                            </button>
+                            <button onclick="viewPaymentHistory('${due.id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm">
+                                <i class="fas fa-history mr-1"></i>History
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openDueModal(dueId) {
+            const due = dueAmounts.find(d => d.id === dueId);
+            if (due) {
+                document.getElementById('updateDueId').value = due.id;
+                document.getElementById('updateFarmerName').value = due.farmerName;
+                document.getElementById('updateDueAmount').value = '₹' + due.dueAmount.toFixed(2);
+                document.getElementById('paymentAmount').value = due.dueAmount; // Default to full due amount
+                document.getElementById('paymentDateTime').value = new Date().toISOString().slice(0, 16); // Current date/time
+                document.getElementById('dueStatus').value = due.status;
+                document.getElementById('updateDueModal').classList.remove('hidden');
+                document.getElementById('updateDueModal').classList.add('flex');
+            }
+        }
+
+        function closeDueModal() {
+            document.getElementById('updateDueModal').classList.add('hidden');
+            document.getElementById('updateDueModal').classList.remove('flex');
+            document.getElementById('dueUpdateForm').reset();
+        }
+
+        function updateDueStatus(event) {
+            event.preventDefault();
+
+            const dueId = document.getElementById('updateDueId').value;
+            const newStatus = document.getElementById('dueStatus').value;
+            const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
+            const paymentDateTime = document.getElementById('paymentDateTime').value;
+
+            const dueIndex = dueAmounts.findIndex(d => d.id === dueId);
+            if (dueIndex !== -1) {
+                const due = dueAmounts[dueIndex];
+
+                // Add payment record
+                if (!due.payments) {
+                    due.payments = [];
+                }
+                due.payments.push({
+                    amount: paymentAmount,
+                    dateTime: paymentDateTime || new Date().toISOString(),
+                    status: newStatus
+                });
+
+                // Update due amount based on payment
+                if (newStatus === 'Paid') {
+                    due.dueAmount = 0; // Fully paid
+                } else if (newStatus === 'Pending') {
+                    due.dueAmount -= paymentAmount; // Reduce due by payment amount
+                }
+
+                due.status = newStatus;
+                localStorage.setItem('dueAmounts', JSON.stringify(dueAmounts));
+                displayDues();
+                displayDueSummary();
+                closeDueModal();
+                alert('Due status updated successfully!');
+            }
+        }
+
+        function searchDues() {
+            const searchTerm = document.getElementById('searchDue').value.toLowerCase();
+            const status = document.getElementById('filterDueStatus').value;
+
+            let filtered = dueAmounts;
+
+            if (searchTerm) {
+                filtered = filtered.filter(d =>
+                    d.farmerName.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (status) {
+                filtered = filtered.filter(d => d.status === status);
+            }
+
+            displayDues(filtered);
+        }
+
+        function viewPaymentHistory(dueId) {
+            const due = dueAmounts.find(d => d.id === dueId);
+            if (!due) return;
+
+            const content = document.getElementById('paymentHistoryContent');
+            content.innerHTML = `
+                <div class="mb-4">
+                    <h4 class="text-lg font-semibold text-gray-800">${due.farmerName}</h4>
+                    <p class="text-gray-600">Bill ID: ${due.billId}</p>
+                    <p class="text-gray-600">Original Due: ₹${due.dueAmount.toFixed(2)}</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="border border-gray-300 px-4 py-2 text-left">Date & Time</th>
+                                <th class="border border-gray-300 px-4 py-2 text-right">Amount</th>
+                                <th class="border border-gray-300 px-4 py-2 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${(due.payments || []).map(payment => `
+                                <tr class="hover:bg-gray-50">
+                                    <td class="border border-gray-300 px-4 py-2">${new Date(payment.dateTime).toLocaleString('en-IN')}</td>
+                                    <td class="border border-gray-300 px-4 py-2 text-right font-semibold">₹${payment.amount.toFixed(2)}</td>
+                                    <td class="border border-gray-300 px-4 py-2 text-center">
+                                        <span class="px-2 py-1 rounded-full text-sm ${payment.status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}">
+                                            ${payment.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                ${(!due.payments || due.payments.length === 0) ? '<p class="text-center text-gray-500 mt-4">No payment records found</p>' : ''}
+            `;
+
+            document.getElementById('paymentHistoryModal').classList.remove('hidden');
+            document.getElementById('paymentHistoryModal').classList.add('flex');
+        }
+
+        function closePaymentHistoryModal() {
+            document.getElementById('paymentHistoryModal').classList.add('hidden');
+            document.getElementById('paymentHistoryModal').classList.remove('flex');
+        }
+
+        // Initialize
+        displayDues();
+        displayDueSummary();
+
+        // Search on input
+        document.getElementById('searchDue').addEventListener('input', searchDues);
+        document.getElementById('filterDueStatus').addEventListener('change', searchDues);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing - Kaviraj Agro Agency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #billPrintArea,
+            #billPrintArea * {
+                visibility: visible;
+            }
+
+            #billPrintArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-green-800 text-white fixed h-full no-print">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold mb-2">🌾Kaviraj Agro Agency</h1>
+                <p class="text-green-200 text-sm"> Management</p>
+            </div>
+            <nav class="mt-6">
+                <a href="index.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-dashboard mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="products.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-box mr-3"></i>
+                    Products
+                </a>
+                <a href="stock.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-warehouse mr-3"></i>
+                    Stock
+                </a>
+                <a href="billing.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                    <i class="fas fa-receipt mr-3"></i>
+                    Billing
+                </a>
+                <a href="due.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-money-bill-wave mr-3"></i>
+                    Due Amounts
+                </a>
+                <a href="customers.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-users mr-3"></i>
+                    Customers
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 ml-64 p-8 overflow-y-auto">
+            <header class="mb-8 flex justify-between items-center no-print">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Billing</h2>
+                    <p class="text-gray-600">Generate, save, and print customer bills</p>
+                </div>
+                <button onclick="openBillListModal()"
+                    class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition flex items-center">
+                    <i class="fas fa-history mr-2"></i>
+                    View Bills
+                </button>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Customer & Bill Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Farmer/Customer Name *</label>
+                                <input type="text" id="customerName" required
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    oninput="searchCustomers()">
+                                <ul id="customerSuggestions"
+                                    class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-40 overflow-y-auto hidden">
+                                </ul>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Contact Number</label>
+                                <input type="tel" id="customerPhone" pattern="[0-9]{10}"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Village</label>
+                                <input type="text" id="customerVillage"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Bill Date</label>
+                                <input type="date" id="billDate"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-8 no-print">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Add Product to Bill</h3>
+                        <div class="flex gap-4 mb-4">
+                            <div class="relative flex-1">
+                                <input type="text" id="productSearch" placeholder="Search product name..."
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    oninput="searchAndSuggest()">
+                                <ul id="suggestionsList"
+                                    class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-40 overflow-y-auto hidden">
+                                </ul>
+                            </div>
+                            <button onclick="addProductToBill()"
+                                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition flex items-center">
+                                <i class="fas fa-plus mr-2"></i> Add
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Selected Product</label>
+                                <input type="text" id="selectedProductName" disabled
+                                    class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2">
+                                <input type="hidden" id="selectedProductId">
+                                <input type="hidden" id="selectedProductPrice">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Quantity</label>
+                                <input type="number" id="productQuantity" min="1" value="1"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Unit Price (₹)</label>
+                                <input type="number" id="unitPriceDisplay" step="0.01" disabled
+                                    class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <h3 class="text-xl font-semibold p-6 text-gray-700">Bill Items</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="text-left py-3 px-6 font-semibold text-gray-700">Item</th>
+                                        <th class="text-center py-3 px-6 font-semibold text-gray-700">Packing</th>
+                                        <th class="text-center py-3 px-6 font-semibold text-gray-700">Price (₹)</th>
+                                        <th class="text-center py-3 px-6 font-semibold text-gray-700">Qty</th>
+                                        <th class="text-center py-3 px-6 font-semibold text-gray-700">Total (₹)</th>
+                                        <th class="text-center py-3 px-6 font-semibold text-gray-700 no-print">Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="billItemsTable">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-8 text-gray-500">No items added to the
+                                            bill yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1">
+                    <div class="sticky top-8 bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Bill Summary</h3>
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between font-medium">
+                                <span>Sub Total:</span>
+                                <span id="subTotal">₹0.00</span>
+                            </div>
+                            <div class="flex justify-between font-medium border-t pt-3">
+                                <span class="text-lg font-bold text-green-700">Grand Total:</span>
+                                <span id="grandTotal" class="text-lg font-bold text-green-700">₹0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h4 class="text-md font-semibold mb-2">Payment Details</h4>
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="paymentType" value="full" checked class="mr-2"
+                                            onchange="toggleDueAmount()">
+                                        Full Payment
+                                    </label>
+                                </div>
+                                <div>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="paymentType" value="due" class="mr-2"
+                                            onchange="toggleDueAmount()">
+                                        Due Payment
+                                    </label>
+                                </div>
+                                <div id="dueAmountDiv" class="hidden mt-2">
+                                    <label class="block text-gray-700 font-semibold mb-2">Due Amount (₹)</label>
+                                    <input type="number" id="dueAmount" min="0" step="0.01"
+                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 no-print">
+                            <button onclick="saveAndPrintBill()" id="savePrintButton" disabled
+                                class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                                <i class="fas fa-print mr-2"></i> Save & Print Bill
+                            </button>
+                            <button onclick="clearBill()"
+                                class="w-full border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition flex items-center justify-center">
+                                <i class="fas fa-times-circle mr-2"></i> Clear Bill
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="billPrintArea" class="hidden">
+                <div class="p-8 bg-white max-w-2xl mx-auto border border-gray-300">
+                    <h1 class="text-3xl font-bold text-center mb-2">Kaviraj Agro Agency</h1>
+                    <p class="text-center text-gray-600 mb-6">Your Agri Solutions Partner</p>
+                    <hr class="mb-6">
+
+                    <div class="flex justify-between mb-4">
+                        <div>
+                            <p class="font-semibold">Bill To:</p>
+                            <p id="printCustomerName" class="text-lg font-bold"></p>
+                        </div>
+                        <div class="text-right">
+                            <p><span class="font-semibold">Bill No:</span> <span id="printBillId"></span></p>
+                            <p><span class="font-semibold">Date:</span> <span id="printBillDate"></span></p>
+                        </div>
+                    </div>
+
+                    <table class="w-full border-collapse mb-6">
+                        <thead>
+                            <tr class="border-b border-t">
+                                <th class="text-left py-2 px-1 text-sm">Item</th>
+                                <th class="text-center py-2 px-1 text-sm">Packing</th>
+                                <th class="text-center py-2 px-1 text-sm">Price</th>
+                                <th class="text-center py-2 px-1 text-sm">Qty</th>
+                                <th class="text-right py-2 px-1 text-sm">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="printBillItemsTable">
+                        </tbody>
+                    </table>
+
+                    <div class="flex justify-end">
+                        <div class="w-1/2">
+                            <div class="flex justify-between border-t pt-2">
+                                <span class="font-semibold">Sub Total:</span>
+                                <span id="printSubTotal" class="font-semibold">₹0.00</span>
+                            </div>
+                            <div class="flex justify-between border-t mt-2 pt-2">
+                                <span class="text-xl font-bold text-green-700">Grand Total:</span>
+                                <span id="printGrandTotal" class="text-xl font-bold text-green-700">₹0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-center mt-8 text-sm text-gray-500">Thank you for your business!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="billListModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 no-print">
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Saved Bills</h3>
+                <button onclick="closeBillListModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Bill ID</th>
+                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Customer Name</th>
+                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Date</th>
+                            <th class="text-right py-3 px-4 font-semibold text-gray-700">Total (₹)</th>
+                            <th class="text-center py-3 px-4 font-semibold text-gray-700">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savedBillsTable">
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-gray-500">No bills saved yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load products from localStorage (from the products.html page)
+        const allProducts = JSON.parse(localStorage.getItem('products')) || [];
+        // Load bills from localStorage
+        let bills = JSON.parse(localStorage.getItem('bills')) || [];
+        let billItems = [];
+        let selectedProduct = null;
+        let customers = JSON.parse(localStorage.getItem('customers')) || [];
+
+        document.getElementById('billDate').valueAsDate = new Date();
+
+        // Utility to format currency
+        const formatter = new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 2
+        });
+
+        // --- Product Search and Selection ---
+
+        function searchAndSuggest() {
+            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+            const suggestionsList = document.getElementById('suggestionsList');
+            suggestionsList.innerHTML = '';
+            suggestionsList.classList.add('hidden');
+            selectedProduct = null;
+            document.getElementById('selectedProductName').value = '';
+            document.getElementById('selectedProductId').value = '';
+            document.getElementById('selectedProductPrice').value = '';
+            document.getElementById('unitPriceDisplay').value = '';
+
+            if (searchTerm.length < 2) return;
+
+            const matches = allProducts.filter(p => p.name.toLowerCase().startsWith(searchTerm)).slice(0, 5);
+
+            if (matches.length > 0) {
+                matches.forEach(product => {
+                    const li = document.createElement('li');
+                    li.classList.add('p-3', 'cursor-pointer', 'hover:bg-green-100');
+                    li.textContent = `${product.name} (${product.packing}) - ₹${product.price}`;
+                    li.onclick = () => selectProduct(product);
+                    suggestionsList.appendChild(li);
+                });
+                suggestionsList.classList.remove('hidden');
+            }
+        }
+
+        function selectProduct(product) {
+            selectedProduct = product;
+            document.getElementById('productSearch').value = product.name;
+            document.getElementById('selectedProductName').value = product.name;
+            document.getElementById('selectedProductId').value = product.id;
+            document.getElementById('selectedProductPrice').value = product.price;
+            document.getElementById('unitPriceDisplay').value = product.price;
+            document.getElementById('suggestionsList').classList.add('hidden');
+            document.getElementById('productQuantity').focus();
+        }
+
+        // --- Bill Management ---
+
+        function addProductToBill() {
+            if (!selectedProduct) {
+                alert('Please search and select a product first.');
+                return;
+            }
+
+            const quantityInput = document.getElementById('productQuantity');
+            const quantity = parseInt(quantityInput.value);
+
+            if (isNaN(quantity) || quantity <= 0) {
+                alert('Please enter a valid quantity.');
+                return;
+            }
+
+            const existingItemIndex = billItems.findIndex(item => item.id === selectedProduct.id);
+            const lineTotal = selectedProduct.price * quantity;
+
+            if (existingItemIndex > -1) {
+                // Update existing item
+                billItems[existingItemIndex].quantity += quantity;
+                billItems[existingItemIndex].total = billItems[existingItemIndex].quantity * billItems[existingItemIndex].price;
+            } else {
+                // Add new item
+                billItems.push({
+                    id: selectedProduct.id,
+                    name: selectedProduct.name,
+                    packing: selectedProduct.packing,
+                    price: selectedProduct.price,
+                    quantity: quantity,
+                    total: lineTotal
+                });
+            }
+
+            // Clear selected product and quantity fields
+            document.getElementById('productSearch').value = '';
+            document.getElementById('selectedProductName').value = '';
+            document.getElementById('selectedProductId').value = '';
+            document.getElementById('selectedProductPrice').value = '';
+            document.getElementById('unitPriceDisplay').value = '';
+            quantityInput.value = 1;
+            selectedProduct = null;
+
+            renderBillItems();
+        }
+
+        function removeBillItem(id) {
+            billItems = billItems.filter(item => item.id !== id);
+            renderBillItems();
+        }
+
+        function renderBillItems() {
+            const tbody = document.getElementById('billItemsTable');
+            const savePrintButton = document.getElementById('savePrintButton');
+            let subTotal = 0;
+
+            if (billItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No items added to the bill yet.</td></tr>';
+                document.getElementById('subTotal').textContent = formatter.format(0);
+                document.getElementById('grandTotal').textContent = formatter.format(0);
+                savePrintButton.disabled = true;
+                return;
+            }
+
+            tbody.innerHTML = billItems.map(item => {
+                subTotal += item.total;
+                return `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-6">${item.name}</td>
+                        <td class="py-3 px-6 text-center">${item.packing}</td>
+                        <td class="py-3 px-6 text-center">${formatter.format(item.price).replace('₹', '')}</td>
+                        <td class="py-3 px-6 text-center">${item.quantity}</td>
+                        <td class="py-3 px-6 text-center font-semibold">${formatter.format(item.total)}</td>
+                        <td class="py-3 px-6 text-center no-print">
+                            <button onclick="removeBillItem('${item.id}')" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('subTotal').textContent = formatter.format(subTotal);
+            document.getElementById('grandTotal').textContent = formatter.format(subTotal);
+            savePrintButton.disabled = false;
+        }
+
+        function searchCustomers() {
+            const searchTerm = document.getElementById('customerName').value.toLowerCase();
+            const suggestionsList = document.getElementById('customerSuggestions');
+            suggestionsList.innerHTML = '';
+            suggestionsList.classList.add('hidden');
+
+            if (searchTerm.length < 2) return;
+
+            const matches = customers.filter(c => c.name.toLowerCase().startsWith(searchTerm)).slice(0, 5);
+
+            if (matches.length > 0) {
+                matches.forEach(customer => {
+                    const li = document.createElement('li');
+                    li.classList.add('p-3', 'cursor-pointer', 'hover:bg-green-100');
+                    li.textContent = `${customer.name} - ${customer.phone || 'No phone'} - ${customer.village || 'No village'}`;
+                    li.onclick = () => selectCustomer(customer);
+                    suggestionsList.appendChild(li);
+                });
+                suggestionsList.classList.remove('hidden');
+            }
+        }
+
+        function selectCustomer(customer) {
+            document.getElementById('customerName').value = customer.name;
+            document.getElementById('customerPhone').value = customer.phone || '';
+            document.getElementById('customerVillage').value = customer.village || '';
+            document.getElementById('customerSuggestions').classList.add('hidden');
+        }
+
+        function saveCustomerInfo(customerName, total, date) {
+            let customers = JSON.parse(localStorage.getItem('customers')) || [];
+            let customer = customers.find(c => c.name === customerName);
+
+            const phone = document.getElementById('customerPhone').value.trim();
+            const village = document.getElementById('customerVillage').value.trim();
+
+            if (customer) {
+                // Update existing customer
+                customer.totalPurchases = (customer.totalPurchases || 0) + total;
+                customer.lastPurchase = date;
+                if (phone) customer.phone = phone;
+                if (village) customer.village = village;
+            } else {
+                // Add new customer
+                customer = {
+                    id: Date.now().toString(),
+                    name: customerName,
+                    phone: phone,
+                    village: village,
+                    totalPurchases: total,
+                    lastPurchase: date
+                };
+                customers.push(customer);
+            }
+
+            localStorage.setItem('customers', JSON.stringify(customers));
+            // Update local customers array
+            this.customers = customers;
+        }
+
+        function clearBill() {
+            if (billItems.length === 0 || confirm('Are you sure you want to clear the current bill?')) {
+                billItems = [];
+                document.getElementById('customerName').value = '';
+                document.getElementById('customerPhone').value = '';
+                document.getElementById('customerVillage').value = '';
+                document.getElementById('billDate').valueAsDate = new Date();
+                document.querySelector('input[name="paymentType"][value="full"]').checked = true;
+                toggleDueAmount();
+                renderBillItems();
+            }
+        }
+
+        function toggleDueAmount() {
+            const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
+            const dueAmountDiv = document.getElementById('dueAmountDiv');
+            if (paymentType === 'due') {
+                dueAmountDiv.classList.remove('hidden');
+            } else {
+                dueAmountDiv.classList.add('hidden');
+                document.getElementById('dueAmount').value = '';
+            }
+        }
+
+        function updateProductStock(billItems) {
+            // Update the stock in localStorage after bill confirmation
+            billItems.forEach(item => {
+                const productIndex = allProducts.findIndex(p => p.id === item.id);
+                if (productIndex !== -1) {
+                    allProducts[productIndex].stock -= item.quantity;
+                    // Ensure stock doesn't go below 0
+                    if (allProducts[productIndex].stock < 0) {
+                        allProducts[productIndex].stock = 0;
+                    }
+                }
+            });
+            localStorage.setItem('products', JSON.stringify(allProducts));
+        }
+
+        function saveAndPrintBill() {
+            const customerName = document.getElementById('customerName').value.trim();
+            const billDate = document.getElementById('billDate').value;
+            const grandTotalElement = document.getElementById('grandTotal').textContent.replace('₹', '').replace(/,/g, '');
+            const grandTotal = parseFloat(grandTotalElement);
+            const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
+            const dueAmount = paymentType === 'due' ? parseFloat(document.getElementById('dueAmount').value) || 0 : 0;
+
+            if (!customerName) {
+                alert('Please enter the Farmer/Customer Name.');
+                document.getElementById('customerName').focus();
+                return;
+            }
+
+            if (billItems.length === 0) {
+                alert('Please add products to the bill before saving.');
+                return;
+            }
+
+            if (paymentType === 'due' && (isNaN(dueAmount) || dueAmount <= 0 || dueAmount > grandTotal)) {
+                alert('Please enter a valid due amount less than or equal to the grand total.');
+                return;
+            }
+
+            const billNo = 'BILL-' + Date.now();
+
+            const newBill = {
+                billNo: billNo,
+                customerName: customerName,
+                date: billDate || new Date().toISOString().substring(0, 10),
+                items: JSON.parse(JSON.stringify(billItems)), // Deep copy
+                total: grandTotal,
+                paymentType: paymentType,
+                dueAmount: dueAmount,
+                paidAmount: paymentType === 'full' ? grandTotal : grandTotal - dueAmount
+            };
+
+            bills.push(newBill);
+            localStorage.setItem('bills', JSON.stringify(bills));
+
+            // Update product stock after bill confirmation
+            updateProductStock(billItems);
+
+            // Save or update customer information
+            saveCustomerInfo(customerName, grandTotal, billDate || new Date().toISOString().substring(0, 10));
+
+            // If there's a due amount, save to dueAmounts
+            if (dueAmount > 0) {
+                const dueAmounts = JSON.parse(localStorage.getItem('dueAmounts')) || [];
+                dueAmounts.push({
+                    id: 'DUE-' + Date.now(),
+                    billId: billNo,
+                    farmerName: customerName,
+                    dueAmount: dueAmount,
+                    date: billDate || new Date().toISOString().substring(0, 10),
+                    status: 'Pending'
+                });
+                localStorage.setItem('dueAmounts', JSON.stringify(dueAmounts));
+            }
+
+            // Populate printable area
+            populatePrintableBill(newBill);
+
+            // Print the bill
+            setTimeout(() => {
+                window.print();
+            }, 100);
+
+            alert('Bill saved, stock updated, customer info saved, and sent to print!');
+            clearBill(); // Clear the current form after saving
+        }
+
+        function populatePrintableBill(bill) {
+            document.getElementById('printCustomerName').textContent = bill.customerName;
+            document.getElementById('printBillId').textContent = bill.billNo;
+            document.getElementById('printBillDate').textContent = bill.date;
+            document.getElementById('printGrandTotal').textContent = formatter.format(bill.total);
+
+            let printTbody = document.getElementById('printBillItemsTable');
+            let printSubTotal = 0;
+
+            printTbody.innerHTML = bill.items.map(item => {
+                printSubTotal += item.total;
+                return `
+                    <tr>
+                        <td class="text-left py-1 px-1">${item.name}</td>
+                        <td class="text-center py-1 px-1">${item.packing}</td>
+                        <td class="text-center py-1 px-1">${formatter.format(item.price).replace('₹', '')}</td>
+                        <td class="text-center py-1 px-1">${item.quantity}</td>
+                        <td class="text-right py-1 px-1">${formatter.format(item.total)}</td>
+                    </tr>
+                `;
+            }).join('');
+            document.getElementById('printSubTotal').textContent = formatter.format(printSubTotal);
+        }
+
+        // --- Saved Bills Modal Functions ---
+
+        function openBillListModal() {
+            renderSavedBills();
+            document.getElementById('billListModal').classList.remove('hidden');
+            document.getElementById('billListModal').classList.add('flex');
+        }
+
+        function closeBillListModal() {
+            document.getElementById('billListModal').classList.add('hidden');
+            document.getElementById('billListModal').classList.remove('flex');
+        }
+
+        function renderSavedBills() {
+            const tbody = document.getElementById('savedBillsTable');
+            if (bills.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">No bills saved yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = bills.map(bill => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 px-4 text-sm">${bill.billNo}</td>
+                    <td class="py-3 px-4">${bill.customerName}</td>
+                    <td class="py-3 px-4">${bill.date}</td>
+                    <td class="py-3 px-4 text-right font-semibold">${formatter.format(bill.total)}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="reprintBill('${bill.billNo}')" class="text-green-600 hover:text-green-800 mr-3" title="Reprint">
+                            <i class="fas fa-print"></i>
+                        </button>
+                        <button onclick="deleteSavedBill('${bill.billNo}')" class="text-red-600 hover:text-red-800" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function reprintBill(billNo) {
+            const bill = bills.find(b => b.billNo === billNo);
+            if (bill) {
+                populatePrintableBill(bill);
+                setTimeout(() => {
+                    window.print();
+                }, 100);
+            }
+        }
+
+        function deleteSavedBill(billNo) {
+            if (confirm(`Are you sure you want to delete bill ${billNo}?`)) {
+                bills = bills.filter(b => b.billNo !== billNo);
+                localStorage.setItem('bills', JSON.stringify(bills));
+                renderSavedBills();
+                alert('Bill deleted successfully!');
+            }
+        }
+
+        function populateCustomerList() {
+            const datalist = document.getElementById('customerList');
+            datalist.innerHTML = customers.map(customer => `<option value="${customer.name}">`).join('');
+        }
+
+        // Initial render
+        document.addEventListener('DOMContentLoaded', function () {
+            renderBillItems();
+            populateCustomerList();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Management - Kaviraj Agro Agency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-green-800 text-white fixed h-full">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold mb-2">🌾Kaviraj Agro Agency</h1>
+                <p class="text-green-200 text-sm">Management</p>
+            </div>
+            <nav class="mt-6">
+                <a href="index.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-dashboard mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="products.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-box mr-3"></i>
+                    Products
+                </a>
+                <a href="stock.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                    <i class="fas fa-warehouse mr-3"></i>
+                    Stock
+                </a>
+                <a href="billing.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-receipt mr-3"></i>
+                    Billing
+                </a>
+                <a href="due.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-money-bill-wave mr-3"></i>
+                    Due Amounts
+                </a>
+                <a href="customers.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-users mr-3"></i>
+                    Customers
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 p-8 overflow-y-auto">
+            <header class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Stock Management</h2>
+                <p class="text-gray-600">Manage and update product stock levels</p>
+            </header>
+
+            <!-- Stock Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Total Stock Value</p>
+                            <h3 class="text-2xl font-bold text-gray-800" id="totalStockValue">₹0</h3>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <i class="fas fa-money-bill-wave text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">In Stock Items</p>
+                            <h3 class="text-2xl font-bold text-green-600" id="inStockCount">0</h3>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="fas fa-check-circle text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Low Stock Alerts</p>
+                            <h3 class="text-2xl font-bold text-red-600" id="lowStockAlerts">0</h3>
+                        </div>
+                        <div class="bg-red-100 p-3 rounded-full">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" id="searchStock" placeholder="Search products..."
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <select id="filterStockCategory"
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">Select Category</option>
+                            <option value="Seeds">Seeds</option>
+                            <option value="Fertilizers">Fertilizers</option>
+                            <option value="Pesticides">Pesticides</option>
+                             <option value="Pesticides">Fungicides</option>
+                              <option value="Pesticides">Herbicides</option>
+                               <option value="Pesticides">Growth Regulators</option>
+                                <option value="Pesticides">Water Solubles</option>
+                            <option value="Tools">Tools</option>
+                            <option value="Others">Others</option>
+                    </select>
+                    <select id="filterStockStatus"
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">All Stock Status</option>
+                        <option value="in-stock">In Stock (≥10)</option>
+                        <option value="low-stock">Low Stock (<10)< /option>
+                        <option value="out-of-stock">Out of Stock (0)</option>
+                    </select>
+                    <button onclick="searchStock()"
+                        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stock Table -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Product Name</th>
+                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Category</th>
+                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Company</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Current Stock</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Price</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Stock Value</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Status</th>
+                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTable">
+                            <tr>
+                                <td colspan="8" class="text-center py-8 text-gray-500">No products found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Update Stock Modal -->
+    <div id="updateStockModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Update Stock</h3>
+                <button onclick="closeStockModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <form id="stockUpdateForm" onsubmit="updateStock(event)">
+                <input type="hidden" id="updateProductId">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Product Name</label>
+                    <input type="text" id="updateProductName" readonly
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Current Stock</label>
+                    <input type="number" id="currentStock" readonly
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Action *</label>
+                    <select id="stockAction" required
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">Select Action</option>
+                        <option value="add">Add Stock</option>
+                        <option value="remove">Remove Stock</option>
+                        <option value="set">Set Stock</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">Quantity *</label>
+                    <input type="number" id="stockQuantity" required min="0"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" onclick="closeStockModal()"
+                        class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Update
+                        Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+
+        function displayStockSummary() {
+            const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock), 0);
+            const inStock = products.filter(p => p.stock >= 10).length;
+            const lowStock = products.filter(p => p.stock < 10 && p.stock > 0).length;
+
+            document.getElementById('totalStockValue').textContent = '₹' + totalValue.toFixed(2);
+            document.getElementById('inStockCount').textContent = inStock;
+            document.getElementById('lowStockAlerts').textContent = lowStock;
+        }
+
+        function displayStock(productsToShow = products) {
+            const tbody = document.getElementById('stockTable');
+            if (productsToShow.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-gray-500">No products found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = productsToShow.map(product => {
+                const stockValue = product.price * product.stock;
+                let statusClass, statusText;
+
+                if (product.stock === 0) {
+                    statusClass = 'bg-red-100 text-red-800';
+                    statusText = 'Out of Stock';
+                } else if (product.stock < 10) {
+                    statusClass = 'bg-yellow-100 text-yellow-800';
+                    statusText = 'Low Stock';
+                } else {
+                    statusClass = 'bg-green-100 text-green-800';
+                    statusText = 'In Stock';
+                }
+
+                return `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-4 px-6 font-semibold">${product.name}</td>
+                        <td class="py-4 px-6">
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">${product.category}</span>
+                        </td>
+                        <td class="py-4 px-6">${product.company}</td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="text-xl font-bold ${product.stock < 10 ? 'text-red-600' : 'text-green-600'}">${product.stock}</span>
+                        </td>
+                        <td class="py-4 px-6 text-center">₹${product.price.toFixed(2)}</td>
+                        <td class="py-4 px-6 text-center font-semibold">₹${stockValue.toFixed(2)}</td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="${statusClass} px-3 py-1 rounded-full text-sm font-semibold">
+                                ${statusText}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            <button onclick="openStockModal('${product.id}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">
+                                <i class="fas fa-edit mr-1"></i>Update
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openStockModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                document.getElementById('updateProductId').value = product.id;
+                document.getElementById('updateProductName').value = product.name;
+                document.getElementById('currentStock').value = product.stock;
+                document.getElementById('stockQuantity').value = '';
+                document.getElementById('stockAction').value = '';
+                document.getElementById('updateStockModal').classList.remove('hidden');
+                document.getElementById('updateStockModal').classList.add('flex');
+            }
+        }
+
+        function closeStockModal() {
+            document.getElementById('updateStockModal').classList.add('hidden');
+            document.getElementById('updateStockModal').classList.remove('flex');
+            document.getElementById('stockUpdateForm').reset();
+        }
+
+        function updateStock(event) {
+            event.preventDefault();
+
+            const productId = document.getElementById('updateProductId').value;
+            const action = document.getElementById('stockAction').value;
+            const quantity = parseInt(document.getElementById('stockQuantity').value);
+
+            const productIndex = products.findIndex(p => p.id === productId);
+            if (productIndex === -1) return;
+
+            const currentStock = products[productIndex].stock;
+            let newStock;
+
+            switch (action) {
+                case 'add':
+                    newStock = currentStock + quantity;
+                    break;
+                case 'remove':
+                    newStock = Math.max(0, currentStock - quantity);
+                    break;
+                case 'set':
+                    newStock = quantity;
+                    break;
+                default:
+                    return;
+            }
+
+            products[productIndex].stock = newStock;
+            localStorage.setItem('products', JSON.stringify(products));
+
+            displayStock();
+            displayStockSummary();
+            closeStockModal();
+            alert('Stock updated successfully!');
+        }
+
+        function searchStock() {
+            const searchTerm = document.getElementById('searchStock').value.toLowerCase();
+            const category = document.getElementById('filterStockCategory').value;
+            const status = document.getElementById('filterStockStatus').value;
+
+            let filtered = products;
+
+            if (searchTerm) {
+                filtered = filtered.filter(p =>
+                    p.name.toLowerCase().includes(searchTerm) ||
+                    p.company.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (category) {
+                filtered = filtered.filter(p => p.category === category);
+            }
+
+            if (status) {
+                switch (status) {
+                    case 'in-stock':
+                        filtered = filtered.filter(p => p.stock >= 10);
+                        break;
+                    case 'low-stock':
+                        filtered = filtered.filter(p => p.stock < 10 && p.stock > 0);
+                        break;
+                    case 'out-of-stock':
+                        filtered = filtered.filter(p => p.stock === 0);
+                        break;
+                }
+            }
+
+            displayStock(filtered);
+        }
+
+        // Initialize
+        displayStock();
+        displayStockSummary();
+
+        // Search on input
+        document.getElementById('searchStock').addEventListener('input', searchStock);
+        document.getElementById('filterStockCategory').addEventListener('change', searchStock);
+        document.getElementById('filterStockStatus').addEventListener('change', searchStock);
+    </script>
+</body>
+
+</html>

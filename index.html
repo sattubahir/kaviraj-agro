@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Kaviraj Agro Agency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+    <!-- Sidebar -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-green-800 text-white fixed h-full">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold mb-2">🌾Kaviraj Agro Agency</h1>
+                <p class="text-green-200 text-sm">Management</p>
+            </div>
+            <nav class="mt-6">
+                <a href="index.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                    <i class="fas fa-dashboard mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="products.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-box mr-3"></i>
+                    Products
+                </a>
+                <a href="stock.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-warehouse mr-3"></i>
+                    Stock
+                </a>
+                <a href="billing.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-receipt mr-3"></i>
+                    Billing
+                </a>
+                <a href="due.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-money-bill-wave mr-3"></i>
+                    Due Amounts
+                </a>
+                <a href="customers.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
+                    <i class="fas fa-users mr-3"></i>
+                    Customers
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 p-8 overflow-y-auto">
+            <!-- Header -->
+            <header class="mb-8 flex justify-between items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Dashboard</h2>
+                    <p class="text-gray-600" id="currentDate"></p>
+                </div>
+                <a href="billing.html"
+                    class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition text-lg font-semibold shadow-md">
+                    <i class="fas fa-plus mr-2"></i>Create Bill
+                </a>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Today's Sales</p>
+                            <h3 class="text-2xl font-bold text-gray-800" id="todaySales">₹0</h3>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <i class="fas fa-rupee-sign text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Total Products</p>
+                            <h3 class="text-2xl font-bold text-gray-800" id="totalProducts">0</h3>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="fas fa-box text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Low Stock Items</p>
+                            <h3 class="text-2xl font-bold text-red-600" id="lowStockCount">0</h3>
+                        </div>
+                        <div class="bg-red-100 p-3 rounded-full">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Total Customers</p>
+                            <h3 class="text-2xl font-bold text-gray-800" id="totalCustomers">0</h3>
+                        </div>
+                        <div class="bg-purple-100 p-3 rounded-full">
+                            <i class="fas fa-users text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Monthly Sales</p>
+                            <h3 class="text-2xl font-bold text-gray-800" id="monthlySales">₹0</h3>
+                        </div>
+                        <div class="bg-orange-100 p-3 rounded-full">
+                            <i class="fas fa-calendar-alt text-orange-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Alert -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                    Low Stock Alerts
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left py-3 px-4">Product Name</th>
+                                <th class="text-left py-3 px-4">Category</th>
+                                <th class="text-left py-3 px-4">Company</th>
+                                <th class="text-center py-3 px-4">Stock</th>
+                                <th class="text-center py-3 px-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lowStockTable">
+                            <tr>
+                                <td colspan="5" class="text-center py-8 text-gray-500">No low stock items</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Today's Sales -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-chart-line text-green-600 mr-2"></i>
+                    Today's Sales Summary
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left py-3 px-4">Bill No.</th>
+                                <th class="text-left py-3 px-4">Customer</th>
+                                <th class="text-left py-3 px-4">Time</th>
+                                <th class="text-right py-3 px-4">Amount</th>
+                                <th class="text-center py-3 px-4">Items</th>
+                            </tr>
+                        </thead>
+                        <tbody id="todaySalesTable">
+                            <tr>
+                                <td colspan="5" class="text-center py-8 text-gray-500">No sales today</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Display current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Load dashboard data
+        function loadDashboard() {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            let bills = JSON.parse(localStorage.getItem('bills')) || [];
+            const customers = JSON.parse(localStorage.getItem('customers')) || [];
+
+            // Migrate old bills from 'savedBills' if 'bills' is empty
+            if (bills.length === 0) {
+                const oldBills = JSON.parse(localStorage.getItem('savedBills')) || [];
+                if (oldBills.length > 0) {
+                    bills = oldBills.map(bill => ({
+                        billNo: bill.id,
+                        customerName: bill.customer,
+                        date: bill.date,
+                        items: bill.items,
+                        total: bill.total,
+                        paymentType: bill.paymentType,
+                        dueAmount: bill.dueAmount,
+                        paidAmount: bill.paidAmount
+                    }));
+                    localStorage.setItem('bills', JSON.stringify(bills));
+                    localStorage.removeItem('savedBills');
+                }
+            }
+
+            // Calculate today's sales
+            const today = new Date().toDateString();
+            const todayBills = bills.filter(bill => new Date(bill.date).toDateString() === today);
+            const todaySalesAmount = todayBills.reduce((sum, bill) => sum + bill.total, 0);
+
+            // Calculate monthly sales
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const monthlyBills = bills.filter(bill => {
+                const billDate = new Date(bill.date);
+                return billDate.getMonth() === currentMonth && billDate.getFullYear() === currentYear;
+            });
+            const monthlySalesAmount = monthlyBills.reduce((sum, bill) => sum + bill.total, 0);
+
+            document.getElementById('todaySales').textContent = '₹' + todaySalesAmount.toFixed(2);
+            document.getElementById('monthlySales').textContent = '₹' + monthlySalesAmount.toFixed(2);
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('totalCustomers').textContent = customers.length;
+
+            // Low stock products (less than 10)
+            const lowStockProducts = products.filter(p => p.stock < 5);
+            document.getElementById('lowStockCount').textContent = lowStockProducts.length;
+
+            // Display low stock items
+            const lowStockTable = document.getElementById('lowStockTable');
+            if (lowStockProducts.length > 0) {
+                lowStockTable.innerHTML = lowStockProducts.map(product => `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-4">${product.name}</td>
+                        <td class="py-3 px-4">${product.category}</td>
+                        <td class="py-3 px-4">${product.company}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="font-bold text-red-600">${product.stock}</span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
+                                Low Stock
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Display today's sales
+            const todaySalesTable = document.getElementById('todaySalesTable');
+            if (todayBills.length > 0) {
+                todaySalesTable.innerHTML = todayBills.map(bill => `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-4 font-semibold">#${bill.billNo}</td>
+                        <td class="py-3 px-4">${bill.customerName}</td>
+                        <td class="py-3 px-4">${new Date(bill.date).toLocaleTimeString('en-IN')}</td>
+                        <td class="py-3 px-4 text-right font-semibold text-green-600">₹${bill.total.toFixed(2)}</td>
+                        <td class="py-3 px-4 text-center">${bill.items.length}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Load dashboard on page load
+        loadDashboard();
+
+        // Refresh dashboard every 30 seconds
+        setInterval(loadDashboard, 30000);
+    </script>
+</body>
+
+</html>
