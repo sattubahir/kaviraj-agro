@@ -41,6 +41,10 @@
                     <i class="fas fa-users mr-3"></i>
                     Customers
                 </a>
+                <a href="reports.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                    <i class="fas fa-file-invoice mr-3"></i>
+                    Financial Reports
+                </a>
             </nav>
         </aside>
 
@@ -129,6 +133,31 @@
                     </table>
                 </div>
             </div>
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 pb-6 bg-white rounded-lg shadow-lg border border-gray-200">
+                <div class="text-center">
+                    <div class="flex items-center justify-center gap-2 mb-3">
+                        <span class="text-gray-600 text-lg">Made with</span>
+                        <span class="text-red-500 text-2xl animate-bounce">❤️</span>
+                        <span class="text-gray-600 text-lg">by</span>
+                        <span class="font-bold text-green-700 text-2xl">Sattu</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-3">Full Stack Developer | Agricultural Tech Enthusiast</p>
+                    <div class="flex justify-center gap-4 mb-3">
+                        <a href="#" class="text-blue-600 hover:text-blue-800 transition">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-800 hover:text-gray-600 transition">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-blue-400 hover:text-blue-600 transition">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                    </div>
+                    <p class="text-xs text-gray-500">© 2025 Kaviraj Agro Agency. All rights reserved.</p>
+                </div>
+            </footer>
+
         </main>
     </div>
 
@@ -242,6 +271,30 @@
                 `;
             }).join('');
         }
+        /*
+                function openDueModal(dueId) {
+                    const due = dueAmounts.find(d => d.id === dueId);
+                    if (due) {
+                        document.getElementById('updateDueId').value = due.id;
+                        document.getElementById('updateFarmerName').value = due.farmerName;
+                        document.getElementById('updateDueAmount').value = '₹' + due.dueAmount.toFixed(2);
+                        document.getElementById('paymentAmount').value = due.dueAmount; // Default to full due amount
+                        // Set current Indian time (IST = UTC+5:30)
+                        const now = new Date();
+                        const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+                        const istTime = new Date(now.getTime() + istOffset);
+                        document.getElementById('paymentDateTime').value = istTime.toISOString().slice(0, 16);
+                        document.getElementById('dueStatus').value = due.status;
+                        document.getElementById('updateDueModal').classList.remove('hidden');
+                        document.getElementById('updateDueModal').classList.add('flex');
+                    }
+                }  */
+
+        function closeDueModal() {
+            document.getElementById('updateDueModal').classList.add('hidden');
+            document.getElementById('updateDueModal').classList.remove('flex');
+            document.getElementById('dueUpdateForm').reset();
+        }
 
         function openDueModal(dueId) {
             const due = dueAmounts.find(d => d.id === dueId);
@@ -249,23 +302,50 @@
                 document.getElementById('updateDueId').value = due.id;
                 document.getElementById('updateFarmerName').value = due.farmerName;
                 document.getElementById('updateDueAmount').value = '₹' + due.dueAmount.toFixed(2);
-                document.getElementById('paymentAmount').value = due.dueAmount; // Default to full due amount
+                document.getElementById('paymentAmount').value = due.dueAmount;
+
                 // Set current Indian time (IST = UTC+5:30)
                 const now = new Date();
-                const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+                const istOffset = 5.5 * 60 * 60 * 1000;
                 const istTime = new Date(now.getTime() + istOffset);
                 document.getElementById('paymentDateTime').value = istTime.toISOString().slice(0, 16);
-                document.getElementById('dueStatus').value = due.status;
+
+                // Add validation for payment amount vs due amount
+                const paymentInput = document.getElementById('paymentAmount');
+                const dueStatusSelect = document.getElementById('dueStatus');
+                const fullOption = dueStatusSelect.querySelector('option[value="Full"]');
+
+                // Function to validate and update status options
+                function validatePaymentAmount() {
+                    const paymentAmount = parseFloat(paymentInput.value) || 0;
+                    const dueAmount = due.dueAmount;
+
+                    if (paymentAmount >= dueAmount) {
+                        // Enable Full option and auto-select it
+                        if (fullOption) fullOption.disabled = false;
+                        dueStatusSelect.value = 'Full';
+                    } else if (paymentAmount > 0) {
+                        // Disable Full option and set to Partial
+                        if (fullOption) fullOption.disabled = true;
+                        dueStatusSelect.value = 'Partial';
+                    } else {
+                        // No payment entered
+                        if (fullOption) fullOption.disabled = true;
+                        dueStatusSelect.value = 'Pending';
+                    }
+                }
+
+                // Attach event listener
+                paymentInput.addEventListener('input', validatePaymentAmount);
+
+                // Run validation on modal open
+                validatePaymentAmount();
+
                 document.getElementById('updateDueModal').classList.remove('hidden');
                 document.getElementById('updateDueModal').classList.add('flex');
             }
         }
 
-        function closeDueModal() {
-            document.getElementById('updateDueModal').classList.add('hidden');
-            document.getElementById('updateDueModal').classList.remove('flex');
-            document.getElementById('dueUpdateForm').reset();
-        }
 
         function updateDueStatus(event) {
             event.preventDefault();

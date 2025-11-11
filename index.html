@@ -43,6 +43,10 @@
                     <i class="fas fa-users mr-3"></i>
                     Customers
                 </a>
+                <a href="reports.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                    <i class="fas fa-file-invoice mr-3"></i>
+                    Financial Reports
+                </a>
             </nav>
         </aside>
 
@@ -174,6 +178,30 @@
                     </table>
                 </div>
             </div>
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 pb-6 bg-white rounded-lg shadow-lg border border-gray-200">
+                <div class="text-center">
+                    <div class="flex items-center justify-center gap-2 mb-3">
+                        <span class="text-gray-600 text-lg">Made with</span>
+                        <span class="text-red-500 text-2xl animate-bounce">❤️</span>
+                        <span class="text-gray-600 text-lg">by</span>
+                        <span class="font-bold text-green-700 text-2xl">Sattu</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-3">Full Stack Developer | Agricultural Tech Enthusiast</p>
+                    <div class="flex justify-center gap-4 mb-3">
+                        <a href="#" class="text-blue-600 hover:text-blue-800 transition">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-800 hover:text-gray-600 transition">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-blue-400 hover:text-blue-600 transition">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                    </div>
+                    <p class="text-xs text-gray-500">© 2025 Kaviraj Agro Agency. All rights reserved.</p>
+                </div>
+            </footer>
         </main>
     </div>
 
@@ -258,14 +286,21 @@
             const todaySalesTable = document.getElementById('todaySalesTable');
             if (todayBills.length > 0) {
                 todaySalesTable.innerHTML = todayBills.map(bill => `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="py-3 px-4 font-semibold">#${bill.billNo}</td>
-                        <td class="py-3 px-4">${bill.customerName}</td>
-                        <td class="py-3 px-4">${new Date(bill.date).toLocaleTimeString('en-IN')}</td>
-                        <td class="py-3 px-4 text-right font-semibold text-green-600">₹${bill.total.toFixed(2)}</td>
-                        <td class="py-3 px-4 text-center">${bill.items.length}</td>
-                    </tr>
-                `).join('');
+    <tr class="border-b hover:bg-gray-50">
+        <td class="py-3 px-4 font-semibold">#${bill.billNo}</td>
+        <td class="py-3 px-4">${bill.customerName}</td>
+        <td class="py-3 px-4">
+            ${new Date(bill.date).toLocaleTimeString('en-IN', {
+                    timeZone: 'Asia/Kolkata',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                })}
+        </td>
+        <td class="py-3 px-4 text-right font-semibold text-green-600">₹${bill.total.toFixed(2)}</td>
+        <td class="py-3 px-4 text-center">${bill.items.length}</td>
+    </tr>
+`).join('');
             }
         }
 

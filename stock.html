@@ -42,6 +42,10 @@
                     <i class="fas fa-users mr-3"></i>
                     Customers
                 </a>
+                <a href="reports.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                    <i class="fas fa-file-invoice mr-3"></i>
+                    Financial Reports
+                </a>
             </nav>
         </aside>
 
@@ -99,21 +103,21 @@
                     <select id="filterStockCategory"
                         class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">Select Category</option>
-                            <option value="Seeds">Seeds</option>
-                            <option value="Fertilizers">Fertilizers</option>
-                            <option value="Pesticides">Pesticides</option>
-                             <option value="Pesticides">Fungicides</option>
-                              <option value="Pesticides">Herbicides</option>
-                               <option value="Pesticides">Growth Regulators</option>
-                                <option value="Pesticides">Water Solubles</option>
-                            <option value="Tools">Tools</option>
-                            <option value="Others">Others</option>
+                        <option value="Seeds">Seeds</option>
+                        <option value="Fertilizers">Fertilizers</option>
+                        <option value="Pesticides">Pesticides</option>
+                        <option value="Pesticides">Fungicides</option>
+                        <option value="Pesticides">Herbicides</option>
+                        <option value="Pesticides">Growth Regulators</option>
+                        <option value="Pesticides">Water Solubles</option>
+                        <option value="Tools">Tools</option>
+                        <option value="Others">Others</option>
                     </select>
                     <select id="filterStockStatus"
                         class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">All Stock Status</option>
                         <option value="in-stock">In Stock (≥10)</option>
-                        <option value="low-stock">Low Stock (<10)</option>
+                        <option value="low-stock">Low Stock (<10)< /option>
                         <option value="out-of-stock">Out of Stock (0)</option>
                     </select>
                     <button onclick="searchStock()"
@@ -147,6 +151,31 @@
                     </table>
                 </div>
             </div>
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 pb-6 bg-white rounded-lg shadow-lg border border-gray-200">
+                <div class="text-center">
+                    <div class="flex items-center justify-center gap-2 mb-3">
+                        <span class="text-gray-600 text-lg">Made with</span>
+                        <span class="text-red-500 text-2xl animate-bounce">❤️</span>
+                        <span class="text-gray-600 text-lg">by</span>
+                        <span class="font-bold text-green-700 text-2xl">Sattu</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-3">Full Stack Developer | Agricultural Tech Enthusiast</p>
+                    <div class="flex justify-center gap-4 mb-3">
+                        <a href="#" class="text-blue-600 hover:text-blue-800 transition">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-800 hover:text-gray-600 transition">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-blue-400 hover:text-blue-600 transition">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                    </div>
+                    <p class="text-xs text-gray-500">© 2025 Kaviraj Agro Agency. All rights reserved.</p>
+                </div>
+            </footer>
+
         </main>
     </div>
 
@@ -185,6 +214,37 @@
                     <label class="block text-gray-700 font-semibold mb-2">Quantity *</label>
                     <input type="number" id="stockQuantity" required min="0"
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <!-- Purchase Details (shown only when adding stock) -->
+                <div id="purchaseDetails" class="hidden">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-2">Unit *</label>
+                        <select id="stockUnit" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select Unit</option>
+                            <option value="kg">kg</option>
+                            <option value="litre">litre</option>
+                            <option value="packet">packet</option>
+                            <option value="bottle">bottle</option>
+                            <option value="can">can</option>
+                            <option value="piece">piece</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-2">Cost Per Unit (₹) *</label>
+                        <input type="number" id="costPerUnit" required min="0" step="0.01"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-2">Total Cost (₹) *</label>
+                        <input type="number" id="totalCost" required min="0" step="0.01"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-2">Supplier</label>
+                        <input type="text" id="supplier"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
                 </div>
                 <div class="flex justify-end gap-4">
                     <button type="button" onclick="closeStockModal()"
@@ -267,6 +327,12 @@
                 document.getElementById('currentStock').value = product.stock;
                 document.getElementById('stockQuantity').value = '';
                 document.getElementById('stockAction').value = '';
+                // Reset purchase details
+                document.getElementById('stockUnit').value = '';
+                document.getElementById('costPerUnit').value = '';
+                document.getElementById('totalCost').value = '';
+                document.getElementById('supplier').value = '';
+                document.getElementById('purchaseDetails').classList.add('hidden');
                 document.getElementById('updateStockModal').classList.remove('hidden');
                 document.getElementById('updateStockModal').classList.add('flex');
             }
@@ -294,6 +360,20 @@
             switch (action) {
                 case 'add':
                     newStock = currentStock + quantity;
+                    // Log the purchase to stockHistory
+                    const stockHistory = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+                    const purchaseEntry = {
+                        date: new Date().toISOString(),
+                        productName: products[productIndex].name,
+                        category: products[productIndex].category,
+                        quantity: quantity,
+                        unit: document.getElementById('stockUnit').value,
+                        costPerUnit: parseFloat(document.getElementById('costPerUnit').value),
+                        totalCost: parseFloat(document.getElementById('totalCost').value),
+                        supplier: document.getElementById('supplier').value || 'N/A'
+                    };
+                    stockHistory.push(purchaseEntry);
+                    localStorage.setItem('stockHistory', JSON.stringify(stockHistory));
                     break;
                 case 'remove':
                     newStock = Math.max(0, currentStock - quantity);
@@ -357,6 +437,25 @@
         document.getElementById('searchStock').addEventListener('input', searchStock);
         document.getElementById('filterStockCategory').addEventListener('change', searchStock);
         document.getElementById('filterStockStatus').addEventListener('change', searchStock);
+
+        // Show/hide purchase details based on action
+        document.getElementById('stockAction').addEventListener('change', function () {
+            const action = this.value;
+            const purchaseDetails = document.getElementById('purchaseDetails');
+            if (action === 'add') {
+                purchaseDetails.classList.remove('hidden');
+                // Make purchase fields required
+                document.getElementById('stockUnit').required = true;
+                document.getElementById('costPerUnit').required = true;
+                document.getElementById('totalCost').required = true;
+            } else {
+                purchaseDetails.classList.add('hidden');
+                // Remove required from purchase fields
+                document.getElementById('stockUnit').required = false;
+                document.getElementById('costPerUnit').required = false;
+                document.getElementById('totalCost').required = false;
+            }
+        });
     </script>
 </body>
 
