@@ -22,7 +22,7 @@
                     <i class="fas fa-dashboard mr-3"></i>
                     Dashboard
                 </a>
-                <a href="products.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                <a href="products.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
                     <i class="fas fa-box mr-3"></i>
                     Products
                 </a>
@@ -42,7 +42,11 @@
                     <i class="fas fa-users mr-3"></i>
                     Customers
                 </a>
-                <a href="reports.html" class="flex items-center px-6 py-3 bg-green-700 border-r-4 border-white">
+                <a href="suppliers.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition ">
+                    <i class="fas fa-truck mr-3"></i>
+                    Suppliers & Purchases
+                </a>
+                <a href="reports.html" class="flex items-center px-6 py-3 hover:bg-green-700 transition">
                     <i class="fas fa-file-invoice mr-3"></i>
                     Financial Reports
                 </a>
@@ -70,10 +74,14 @@
                         class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                     <select id="filterCategory"
                         class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <option value="">All Categories</option>
+                        <option value="">Select Category</option>
                         <option value="Seeds">Seeds</option>
                         <option value="Fertilizers">Fertilizers</option>
                         <option value="Pesticides">Pesticides</option>
+                        <option value="Pesticides">Fungicides</option>
+                        <option value="Pesticides">Herbicides</option>
+                        <option value="Pesticides">Growth Regulators</option>
+                        <option value="Pesticides">Water Solubles</option>
                         <option value="Tools">Tools</option>
                         <option value="Others">Others</option>
                     </select>
@@ -114,9 +122,12 @@
                         <span class="text-gray-600 text-lg">Made with</span>
                         <span class="text-red-500 text-2xl animate-bounce">❤️</span>
                         <span class="text-gray-600 text-lg">by</span>
-                        <span class="font-bold text-green-700 text-2xl">Sattu</span>
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-2xl font-bold">Satyajit
+                            Bahir</span>
+
                     </div>
-                    <p class="text-sm text-gray-500 mb-3">Full Stack Developer | Agricultural Tech Enthusiast</p>
+
                     <div class="flex justify-center gap-4 mb-3">
                         <a href="#" class="text-blue-600 hover:text-blue-800 transition">
                             <i class="fab fa-linkedin text-xl"></i>
