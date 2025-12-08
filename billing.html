@@ -151,13 +151,20 @@
                                 <i class="fas fa-plus mr-2"></i> Add
                             </button>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
                                 <label class="block text-gray-700 font-semibold mb-2">Selected Product</label>
                                 <input type="text" id="selectedProductName" disabled
                                     class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2">
                                 <input type="hidden" id="selectedProductId">
                                 <input type="hidden" id="selectedProductPrice">
+                                <input type="hidden" id="selectedProductStock">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Available Stock</label>
+                                <input type="text" id="availableStock" disabled
+                                    class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 font-semibold"
+                                    value="-">
                             </div>
                             <div>
                                 <label class="block text-gray-700 font-semibold mb-2">Quantity</label>
@@ -444,7 +451,10 @@
             document.getElementById('selectedProductName').value = '';
             document.getElementById('selectedProductId').value = '';
             document.getElementById('selectedProductPrice').value = '';
+            document.getElementById('selectedProductStock').value = '';
             document.getElementById('unitPriceDisplay').value = '';
+            document.getElementById('availableStock').value = '-';
+            document.getElementById('availableStock').classList.remove('text-red-600', 'text-orange-600', 'text-green-600');
 
             if (searchTerm.length < 2) return;
 
@@ -454,7 +464,16 @@
                 matches.forEach(product => {
                     const li = document.createElement('li');
                     li.classList.add('p-3', 'cursor-pointer', 'hover:bg-green-100');
-                    li.textContent = `${product.name} (${product.packing}) - ₹${product.price}`;
+
+                    const stockColor = product.stock > 10 ? 'text-green-600' : product.stock > 0 ? 'text-orange-600' : 'text-red-600';
+                    const stockText = product.stock > 0 ? `Stock: ${product.stock}` : 'Out of Stock';
+
+                    li.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <span>${product.name} (${product.packing}) - ₹${product.price}</span>
+                            <span class="${stockColor} font-semibold text-sm">${stockText}</span>
+                        </div>
+                    `;
                     li.onclick = () => selectProduct(product);
                     suggestionsList.appendChild(li);
                 });
@@ -468,7 +487,23 @@
             document.getElementById('selectedProductName').value = product.name;
             document.getElementById('selectedProductId').value = product.id;
             document.getElementById('selectedProductPrice').value = product.price;
+            document.getElementById('selectedProductStock').value = product.stock;
             document.getElementById('unitPriceDisplay').value = product.price;
+
+            // Display available stock with color coding
+            const stockField = document.getElementById('availableStock');
+            stockField.value = product.stock;
+            if (product.stock === 0) {
+                stockField.classList.add('text-red-600');
+                stockField.classList.remove('text-orange-600', 'text-green-600');
+            } else if (product.stock < 10) {
+                stockField.classList.add('text-orange-600');
+                stockField.classList.remove('text-red-600', 'text-green-600');
+            } else {
+                stockField.classList.add('text-green-600');
+                stockField.classList.remove('text-red-600', 'text-orange-600');
+            }
+
             document.getElementById('suggestionsList').classList.add('hidden');
             document.getElementById('productQuantity').focus();
         }
@@ -489,7 +524,23 @@
                 return;
             }
 
+            // Check if product has stock
+            if (selectedProduct.stock === 0) {
+                alert(`Sorry! ${selectedProduct.name} is currently out of stock.`);
+                return;
+            }
+
+            // Calculate already added quantity for this product
             const existingItemIndex = billItems.findIndex(item => item.id === selectedProduct.id);
+            const alreadyAdded = existingItemIndex > -1 ? billItems[existingItemIndex].quantity : 0;
+            const totalQuantity = alreadyAdded + quantity;
+
+            // Check if requested quantity exceeds available stock
+            if (totalQuantity > selectedProduct.stock) {
+                alert(`Insufficient stock! Available: ${selectedProduct.stock}, Already in bill: ${alreadyAdded}.\nYou can add maximum ${selectedProduct.stock - alreadyAdded} more units.`);
+                return;
+            }
+
             const lineTotal = selectedProduct.price * quantity;
 
             if (existingItemIndex > -1) {
@@ -513,7 +564,10 @@
             document.getElementById('selectedProductName').value = '';
             document.getElementById('selectedProductId').value = '';
             document.getElementById('selectedProductPrice').value = '';
+            document.getElementById('selectedProductStock').value = '';
             document.getElementById('unitPriceDisplay').value = '';
+            document.getElementById('availableStock').value = '-';
+            document.getElementById('availableStock').classList.remove('text-red-600', 'text-orange-600', 'text-green-600');
             quantityInput.value = 1;
             selectedProduct = null;
 
@@ -916,17 +970,9 @@
             }
         }
 
-        function populateCustomerList() {
-            const datalist = document.getElementById('customerList');
-            datalist.innerHTML = customers.map(customer => `<option value="${customer.name}">`).join('');
-        }
-
         // Initial render
         document.addEventListener('DOMContentLoaded', function () {
             renderBillItems();
-            populateCustomerList();
-
-
         });
     </script>
 </body>
