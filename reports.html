@@ -7,13 +7,24 @@
     <title>Financial Reports - Kaviraj Agro Agency</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media (max-width: 768px) {
+            body.sidebar-open {
+                overflow: hidden;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100">
     <!-- Sidebar -->
-    <div class="flex h-screen">
+    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-green-800 text-white p-2 rounded-lg">
+        <i class="fas fa-bars text-xl"></i>
+    </button>
+    <div class="flex h-screen flex-col lg:flex-row">
         <!-- Sidebar -->
-        <aside class="w-64 bg-green-800 text-white fixed h-full">
+        <aside id="sidebar"
+            class="w-64 bg-green-800 text-white fixed lg:static h-full -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 overflow-y-auto">
             <div class="p-6">
                 <h1 class="text-2xl font-bold mb-2">🌾Kaviraj Agro Agency</h1>
                 <p class="text-green-200 text-sm">Management</p>
@@ -55,24 +66,25 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 ml-64 p-8 overflow-y-auto">
+        <main class="flex-1 w-full lg:w-auto p-4 lg:p-8 overflow-y-auto lg:ml-0 mt-16 lg:mt-0">
             <!-- Header -->
             <header class="mb-8">
-                <h2 class="text-3xl font-bold text-gray-800">Financial Reports</h2>
-                <p class="text-gray-600">Download monthly reports for tax compliance and business analysis</p>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Financial Reports</h2>
+                <p class="text-gray-600 text-sm lg:text-base">Download monthly reports for tax compliance and business
+                    analysis</p>
             </header>
 
             <!-- Date Filter Section -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-calendar-alt text-green-600 mr-2"></i>
+            <div class="bg-white rounded-lg shadow-md p-4 lg:p-6 mb-8">
+                <h3 class="text-lg lg:text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-calendar-alt text-green-600"></i>
                     Select Report Period
                 </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Month</label>
+                        <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Month</label>
                         <select id="reportMonth"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-sm">
                             <option value="0">January</option>
                             <option value="1">February</option>
                             <option value="2">March</option>
@@ -88,15 +100,15 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                        <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Year</label>
                         <select id="reportYear"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-sm">
                             <!-- Will be populated dynamically -->
                         </select>
                     </div>
                     <div class="flex items-end">
                         <button onclick="generateReportSummary()"
-                            class="w-full bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition font-semibold">
+                            class="w-full bg-green-600 text-white px-4 lg:px-6 py-2 rounded-lg hover:bg-green-700 transition font-semibold text-sm">
                             <i class="fas fa-chart-bar mr-2"></i>Generate Summary
                         </button>
                     </div>
@@ -264,7 +276,7 @@
             <!-- Footer -->
             <footer class="mt-12 pt-8 pb-6 bg-white rounded-lg shadow-lg border border-gray-200">
                 <div class="text-center">
-                    <div class="flex items-center justify-center gap-2 mb-3">
+                    <!-- <div class="flex items-center justify-center gap-2 mb-3">
                         <span class="text-gray-600 text-lg">Made with</span>
                         <span class="text-red-500 text-2xl animate-bounce">❤️</span>
                         <span class="text-gray-600 text-lg">by</span>
@@ -272,7 +284,7 @@
                             class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-2xl font-bold">Satyajit
                             Bahir</span>
 
-                    </div>
+                    </div> -->
 
                     <div class="flex justify-center gap-4 mb-3">
                         <a href="#" class="text-blue-600 hover:text-blue-800 transition">
@@ -335,6 +347,24 @@
     </div>
 
     <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const body = document.body;
+
+        mobileMenuToggle?.addEventListener('click', function () {
+            sidebar.classList.toggle('-translate-x-full');
+            body.classList.toggle('sidebar-open');
+        });
+
+        const navLinks = sidebar?.querySelectorAll('a');
+        navLinks?.forEach(link => {
+            link.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                body.classList.remove('sidebar-open');
+            });
+        });
+
         // Initialize year dropdown
         function initializeYearDropdown() {
             const yearSelect = document.getElementById('reportYear');
@@ -362,7 +392,7 @@
             // Get data from localStorage
             const bills = JSON.parse(localStorage.getItem('bills') || '[]');
             const dueAmounts = JSON.parse(localStorage.getItem('dueAmounts') || '[]');
-            const stockHistory = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+            const suppliers = JSON.parse(localStorage.getItem('kavirajSuppliers') || '[]');
 
             // Filter data for selected month/year
             const filteredBills = bills.filter(bill => {
@@ -370,19 +400,26 @@
                 return billDate.getMonth() === month && billDate.getFullYear() === year;
             });
 
-            const filteredStock = stockHistory.filter(stock => {
-                const stockDate = new Date(stock.date);
-                return stockDate.getMonth() === month && stockDate.getFullYear() === year;
+            // Calculate total stock added from supplier purchases
+            let totalStockAdded = 0;
+            suppliers.forEach(supplier => {
+                if (supplier.purchases && supplier.purchases.length > 0) {
+                    supplier.purchases.forEach(purchase => {
+                        const purchaseDate = new Date(purchase.date);
+                        if (purchaseDate.getMonth() === month && purchaseDate.getFullYear() === year) {
+                            totalStockAdded += (purchase.total || 0);
+                        }
+                    });
+                }
             });
 
             // Calculate totals
             const totalSales = filteredBills.reduce((sum, bill) => sum + (bill.total || 0), 0);
-            const totalStock = filteredStock.reduce((sum, stock) => sum + (stock.totalCost || 0), 0);
             const totalDue = dueAmounts.reduce((sum, due) => sum + (due.dueAmount || 0), 0);
 
             // Update UI
             document.getElementById('totalSales').textContent = '₹' + totalSales.toFixed(2);
-            document.getElementById('totalStock').textContent = '₹' + totalStock.toFixed(2);
+            document.getElementById('totalStock').textContent = '₹' + totalStockAdded.toFixed(2);
             document.getElementById('totalDue').textContent = '₹' + totalDue.toFixed(2);
             document.getElementById('totalBills').textContent = filteredBills.length;
 
@@ -425,27 +462,36 @@
         function downloadStockReport() {
             const month = parseInt(document.getElementById('reportMonth').value);
             const year = parseInt(document.getElementById('reportYear').value);
-            const stockHistory = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+            const suppliers = JSON.parse(localStorage.getItem('kavirajSuppliers') || '[]');
 
-            const filteredStock = stockHistory.filter(stock => {
-                const stockDate = new Date(stock.date);
-                return stockDate.getMonth() === month && stockDate.getFullYear() === year;
+            // Collect all purchases from all suppliers for the selected period
+            let allPurchases = [];
+            suppliers.forEach(supplier => {
+                if (supplier.purchases && supplier.purchases.length > 0) {
+                    supplier.purchases.forEach(purchase => {
+                        const purchaseDate = new Date(purchase.date);
+                        if (purchaseDate.getMonth() === month && purchaseDate.getFullYear() === year) {
+                            allPurchases.push({
+                                ...purchase,
+                                supplierName: supplier.name
+                            });
+                        }
+                    });
+                }
             });
 
-            if (filteredStock.length === 0) {
+            if (allPurchases.length === 0) {
                 alert('No stock data found for the selected period.');
                 return;
             }
 
             // Create CSV content
-            let csvContent = 'Date,Time,Product Name,Category,Quantity Added,Unit,Cost Per Unit,Total Cost,Supplier\n';
+            let csvContent = 'Date,Supplier,Product Name,Quantity,Unit,Total Cost,Paid Amount,Due Amount\n';
 
-            filteredStock.forEach(stock => {
-                const date = new Date(stock.date);
-                const dateStr = date.toLocaleDateString('en-IN');
-                const timeStr = date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+            allPurchases.forEach(purchase => {
+                const dateStr = new Date(purchase.date).toLocaleDateString('en-IN');
 
-                csvContent += `${dateStr},${timeStr},"${stock.productName}","${stock.category}",${stock.quantity},${stock.unit},${stock.costPerUnit},${stock.totalCost},"${stock.supplier || 'N/A'}"\n`;
+                csvContent += `${dateStr},"${purchase.supplierName}","${purchase.product}",${purchase.quantity},${purchase.unit},${purchase.total.toFixed(2)},${purchase.paid.toFixed(2)},${purchase.due.toFixed(2)}\n`;
             });
 
             downloadCSV(csvContent, `Stock_Report_${getMonthName(month)}_${year}.csv`);

@@ -7,13 +7,30 @@
     <title>Dashboard - Kaviraj Agro Agency</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media (max-width: 768px) {
+            body.sidebar-open {
+                overflow: hidden;
+            }
+
+            aside.sidebar-mobile {
+                transform: translateX(0);
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100">
     <!-- Sidebar -->
-    <div class="flex h-screen">
+    <div class="flex h-screen flex-col lg:flex-row">
+        <!-- Mobile Menu Toggle -->
+        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-green-800 text-white p-2 rounded-lg">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+
         <!-- Sidebar -->
-        <aside class="w-64 bg-green-800 text-white fixed h-full">
+        <aside id="sidebar"
+            class="w-64 bg-green-800 text-white fixed lg:static h-full -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 overflow-y-auto">
             <div class="p-6">
                 <h1 class="text-2xl font-bold mb-2">🌾Kaviraj Agro Agency</h1>
                 <p class="text-green-200 text-sm">Management</p>
@@ -55,26 +72,26 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 ml-64 p-8 overflow-y-auto">
+        <main class="flex-1 w-full lg:w-auto p-4 lg:p-8 overflow-y-auto lg:ml-0 mt-16 lg:mt-0">
             <!-- Header -->
-            <header class="mb-8 flex justify-between items-center">
+            <header class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-800">Dashboard</h2>
-                    <p class="text-gray-600" id="currentDate"></p>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Dashboard</h2>
+                    <p class="text-gray-600 text-sm lg:text-base" id="currentDate"></p>
                 </div>
                 <a href="billing.html"
-                    class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition text-lg font-semibold shadow-md">
+                    class="bg-green-600 text-white px-4 lg:px-6 py-2 lg:py-3 rounded-lg hover:bg-green-700 transition text-sm lg:text-lg font-semibold shadow-md w-full lg:w-auto text-center">
                     <i class="fas fa-plus mr-2"></i>Create Bill
                 </a>
             </header>
 
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-4">
                         <div>
-                            <p class="text-gray-600 text-sm">Today's Sales</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="todaySales">₹0</h3>
+                            <p class="text-gray-600 text-xs lg:text-sm">Today's Sales</p>
+                            <h3 class="text-xl lg:text-2xl font-bold text-gray-800" id="todaySales">₹0</h3>
                         </div>
                         <div class="bg-green-100 p-3 rounded-full">
                             <i class="fas fa-rupee-sign text-green-600 text-xl"></i>
@@ -83,10 +100,10 @@
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-4">
                         <div>
-                            <p class="text-gray-600 text-sm">Total Products</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="totalProducts">0</h3>
+                            <p class="text-gray-600 text-xs lg:text-sm">Total Products</p>
+                            <h3 class="text-xl lg:text-2xl font-bold text-gray-800" id="totalProducts">0</h3>
                         </div>
                         <div class="bg-blue-100 p-3 rounded-full">
                             <i class="fas fa-box text-blue-600 text-xl"></i>
@@ -95,10 +112,10 @@
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-4">
                         <div>
-                            <p class="text-gray-600 text-sm">Low Stock Items</p>
-                            <h3 class="text-2xl font-bold text-red-600" id="lowStockCount">0</h3>
+                            <p class="text-gray-600 text-xs lg:text-sm">Low Stock Items</p>
+                            <h3 class="text-xl lg:text-2xl font-bold text-red-600" id="lowStockCount">0</h3>
                         </div>
                         <div class="bg-red-100 p-3 rounded-full">
                             <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
@@ -107,22 +124,22 @@
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-4">
                         <div>
-                            <p class="text-gray-600 text-sm">Total Customers</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="totalCustomers">0</h3>
+                            <p class="text-gray-600 text-xs lg:text-sm">Total Customers</p>
+                            <h3 class="text-xl lg:text-2xl font-bold text-gray-800" id="totalCustomers">0</h3>
                         </div>
-                        <div class="bg-purple-100 p-3 rounded-full">
-                            <i class="fas fa-users text-purple-600 text-xl"></i>
+                        <div class="bg-purple-100 p-3 rounded-full cursor-pointer">
+                            <i class="fas fa-users text-purple-600 text-xl" id="customersicon"></i>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-4">
                         <div>
-                            <p class="text-gray-600 text-sm">Monthly Sales</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="monthlySales">₹0</h3>
+                            <p class="text-gray-600 text-xs lg:text-sm">Monthly Sales</p>
+                            <h3 class="text-xl lg:text-2xl font-bold text-gray-800" id="monthlySales">₹0</h3>
                         </div>
                         <div class="bg-orange-100 p-3 rounded-full">
                             <i class="fas fa-calendar-alt text-orange-600 text-xl"></i>
@@ -132,20 +149,20 @@
             </div>
 
             <!-- Low Stock Alert -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+            <div class="bg-white rounded-lg shadow-md p-4 lg:p-6 mb-8">
+                <h3 class="text-lg lg:text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-exclamation-circle text-red-600"></i>
                     Low Stock Alerts
                 </h3>
                 <div class="overflow-x-auto">
-                    <table class="w-full">
+                    <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b">
-                                <th class="text-left py-3 px-4">Product Name</th>
-                                <th class="text-left py-3 px-4">Category</th>
-                                <th class="text-left py-3 px-4">Company</th>
-                                <th class="text-center py-3 px-4">Stock</th>
-                                <th class="text-center py-3 px-4">Status</th>
+                                <th class="text-left py-3 px-4 lg:px-6 font-semibold">Product Name</th>
+                                <th class="text-left py-3 px-4 lg:px-6 font-semibold hidden sm:table-cell">Category</th>
+                                <th class="text-left py-3 px-4 lg:px-6 font-semibold hidden md:table-cell">Company</th>
+                                <th class="text-center py-3 px-4 lg:px-6 font-semibold">Stock</th>
+                                <th class="text-center py-3 px-4 lg:px-6 font-semibold hidden sm:table-cell">Status</th>
                             </tr>
                         </thead>
                         <tbody id="lowStockTable">
@@ -158,20 +175,20 @@
             </div>
 
             <!-- Today's Sales -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-chart-line text-green-600 mr-2"></i>
+            <div class="bg-white rounded-lg shadow-md p-4 lg:p-6">
+                <h3 class="text-lg lg:text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-chart-line text-green-600"></i>
                     Today's Sales Summary
                 </h3>
                 <div class="overflow-x-auto">
-                    <table class="w-full">
+                    <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b">
-                                <th class="text-left py-3 px-4">Bill No.</th>
-                                <th class="text-left py-3 px-4">Customer</th>
-                                <th class="text-left py-3 px-4">Time</th>
-                                <th class="text-right py-3 px-4">Amount</th>
-                                <th class="text-center py-3 px-4">Items</th>
+                                <th class="text-left py-3 px-4 lg:px-6 font-semibold">Bill No.</th>
+                                <th class="text-left py-3 px-4 lg:px-6 font-semibold">Customer</th>
+                                <th class="text-left py-3 px-4 lg:px-6 font-semibold hidden sm:table-cell">Time</th>
+                                <th class="text-right py-3 px-4 lg:px-6 font-semibold">Amount</th>
+                                <th class="text-center py-3 px-4 lg:px-6 font-semibold hidden sm:table-cell">Items</th>
                             </tr>
                         </thead>
                         <tbody id="todaySalesTable">
@@ -183,9 +200,10 @@
                 </div>
             </div>
             <!-- Footer -->
-            <footer class="mt-12 pt-8 pb-6 bg-white rounded-lg shadow-lg border border-gray-200">
+            <footer
+                class="mt-12 pt-8 pb-6 bg-white rounded-lg shadow-lg border border-gray-200 text-center text-xs lg:text-base">
                 <div class="text-center">
-                    <div class="flex items-center justify-center gap-2 mb-3">
+                    <!-- <div class="flex items-center justify-center gap-2 mb-3">
                         <span class="text-gray-600 text-lg">Made with</span>
                         <span class="text-red-500 text-2xl animate-bounce">❤️</span>
                         <span class="text-gray-600 text-lg">by</span>
@@ -193,8 +211,8 @@
                             class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-2xl font-bold">Satyajit
                             Bahir</span>
 
-                    </div>
-             
+                    </div> -->
+
                     <div class="flex justify-center gap-4 mb-3">
                         <a href="#" class="text-blue-600 hover:text-blue-800 transition">
                             <i class="fab fa-linkedin text-xl"></i>
@@ -213,6 +231,25 @@
     </div>
 
     <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const body = document.body;
+
+        mobileMenuToggle?.addEventListener('click', function () {
+            sidebar.classList.toggle('-translate-x-full');
+            body.classList.toggle('sidebar-open');
+        });
+
+        // Close sidebar when a link is clicked
+        const navLinks = sidebar?.querySelectorAll('a');
+        navLinks?.forEach(link => {
+            link.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                body.classList.remove('sidebar-open');
+            });
+        });
+
         // Display current date
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
             weekday: 'long',
@@ -274,13 +311,13 @@
             if (lowStockProducts.length > 0) {
                 lowStockTable.innerHTML = lowStockProducts.map(product => `
                     <tr class="border-b hover:bg-gray-50">
-                        <td class="py-3 px-4">${product.name}</td>
-                        <td class="py-3 px-4">${product.category}</td>
-                        <td class="py-3 px-4">${product.company}</td>
-                        <td class="py-3 px-4 text-center">
+                        <td class="py-3 px-4 lg:px-6">${product.name}</td>
+                        <td class="py-3 px-4 lg:px-6 hidden sm:table-cell">${product.category}</td>
+                        <td class="py-3 px-4 lg:px-6 hidden md:table-cell">${product.company}</td>
+                        <td class="py-3 px-4 lg:px-6 text-center">
                             <span class="font-bold text-red-600">${product.stock}</span>
                         </td>
-                        <td class="py-3 px-4 text-center">
+                        <td class="py-3 px-4 lg:px-6 text-center hidden sm:table-cell">
                             <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
                                 Low Stock
                             </span>
@@ -294,9 +331,9 @@
             if (todayBills.length > 0) {
                 todaySalesTable.innerHTML = todayBills.map(bill => `
     <tr class="border-b hover:bg-gray-50">
-        <td class="py-3 px-4 font-semibold">#${bill.billNo}</td>
-        <td class="py-3 px-4">${bill.customerName}</td>
-        <td class="py-3 px-4">
+        <td class="py-3 px-4 lg:px-6 font-semibold">#${bill.billNo}</td>
+        <td class="py-3 px-4 lg:px-6">${bill.customerName}</td>
+        <td class="py-3 px-4 lg:px-6 hidden sm:table-cell">
             ${new Date(bill.date).toLocaleTimeString('en-IN', {
                     timeZone: 'Asia/Kolkata',
                     hour: '2-digit',
@@ -304,11 +341,15 @@
                     hour12: true
                 })}
         </td>
-        <td class="py-3 px-4 text-right font-semibold text-green-600">₹${bill.total.toFixed(2)}</td>
-        <td class="py-3 px-4 text-center">${bill.items.length}</td>
+        <td class="py-3 px-4 lg:px-6 text-right font-semibold text-green-600">₹${bill.total.toFixed(2)}</td>
+        <td class="py-3 px-4 lg:px-6 text-center hidden sm:table-cell">${bill.items.length}</td>
     </tr>
 `).join('');
             }
+        }
+
+        document.getElementById('customersicon').onclick = function () {
+            window.location.href = 'customers.html';
         }
 
         // Load dashboard on page load
@@ -316,6 +357,7 @@
 
         // Refresh dashboard every 30 seconds
         setInterval(loadDashboard, 30000);
+
     </script>
 </body>
 

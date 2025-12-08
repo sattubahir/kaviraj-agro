@@ -7,12 +7,29 @@
     <title>Products - Kaviraj Agro Agency</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media (max-width: 768px) {
+            body.sidebar-open {
+                overflow: hidden;
+            }
+
+            aside.sidebar-mobile {
+                transform: translateX(0);
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100">
-    <div class="flex h-screen">
+    <!-- Mobile Menu Toggle -->
+    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-green-800 text-white p-2 rounded-lg">
+        <i class="fas fa-bars text-xl"></i>
+    </button>
+
+    <div class="flex h-screen flex-col lg:flex-row">
         <!-- Sidebar -->
-        <aside class="w-64 bg-green-800 text-white fixed h-full">
+        <aside id="sidebar"
+            class="w-64 bg-green-800 text-white fixed lg:static h-full -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 overflow-y-auto">
             <div class="p-6">
                 <h1 class="text-2xl font-bold mb-2">🌾Kaviraj Agro Agency</h1>
                 <p class="text-green-200 text-sm">Management</p>
@@ -54,26 +71,26 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 ml-64 p-8 overflow-y-auto">
-            <header class="mb-8 flex justify-between items-center">
+        <main class="flex-1 w-full lg:w-auto p-4 lg:p-8 overflow-y-auto lg:ml-0 mt-16 lg:mt-0">
+            <header class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-800">Products</h2>
-                    <p class="text-gray-600">Manage your product inventory</p>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Products</h2>
+                    <p class="text-gray-600 text-sm lg:text-base">Manage your product inventory</p>
                 </div>
                 <button onclick="openAddModal()"
-                    class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition flex items-center">
+                    class="bg-green-600 text-white px-4 lg:px-6 py-2 lg:py-3 rounded-lg hover:bg-green-700 transition flex items-center w-full lg:w-auto justify-center text-sm lg:text-base">
                     <i class="fas fa-plus mr-2"></i>
                     Add Product
                 </button>
             </header>
 
             <!-- Search and Filter -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white rounded-lg shadow-md p-4 lg:p-6 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <input type="text" id="searchProduct" placeholder="Search products..."
-                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
                     <select id="filterCategory"
-                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
                         <option value="">Select Category</option>
                         <option value="Seeds">Seeds</option>
                         <option value="Fertilizers">Fertilizers</option>
@@ -86,7 +103,7 @@
                         <option value="Others">Others</option>
                     </select>
                     <button onclick="searchProducts()"
-                        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                        class="bg-blue-600 text-white px-4 lg:px-6 py-2 rounded-lg hover:bg-blue-700 transition text-sm">
                         <i class="fas fa-search mr-2"></i>Search
                     </button>
                 </div>
@@ -94,17 +111,23 @@
 
             <!-- Products Table -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
+                <div class="overflow-x-auto -mx-4 lg:mx-0">
+                    <table class="w-full text-sm">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Product Name</th>
-                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Category</th>
-                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Company</th>
-                                <th class="text-left py-4 px-6 font-semibold text-gray-700">Packing</th>
-                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Price</th>
-                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Stock</th>
-                                <th class="text-center py-4 px-6 font-semibold text-gray-700">Actions</th>
+                                <th class="text-left py-4 px-2 lg:px-6 font-semibold text-gray-700">Product Name</th>
+                                <th
+                                    class="text-left py-4 px-2 lg:px-6 font-semibold text-gray-700 hidden sm:table-cell">
+                                    Category</th>
+                                <th
+                                    class="text-left py-4 px-2 lg:px-6 font-semibold text-gray-700 hidden md:table-cell">
+                                    Company</th>
+                                <th
+                                    class="text-left py-4 px-2 lg:px-6 font-semibold text-gray-700 hidden lg:table-cell">
+                                    Packing</th>
+                                <th class="text-center py-4 px-2 lg:px-6 font-semibold text-gray-700">Price</th>
+                                <th class="text-center py-4 px-2 lg:px-6 font-semibold text-gray-700">Stock</th>
+                                <th class="text-center py-4 px-2 lg:px-6 font-semibold text-gray-700">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="productsTable">
@@ -116,9 +139,10 @@
                 </div>
             </div>
             <!-- Footer -->
-            <footer class="mt-12 pt-8 pb-6 bg-white rounded-lg shadow-lg border border-gray-200">
+            <footer
+                class="mt-12 pt-8 pb-6 bg-white rounded-lg shadow-lg border border-gray-200 text-center text-xs lg:text-base">
                 <div class="text-center">
-                    <div class="flex items-center justify-center gap-2 mb-3">
+                    <!-- <div class="flex items-center justify-center gap-2 mb-3">
                         <span class="text-gray-600 text-lg">Made with</span>
                         <span class="text-red-500 text-2xl animate-bounce">❤️</span>
                         <span class="text-gray-600 text-lg">by</span>
@@ -126,7 +150,7 @@
                             class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-2xl font-bold">Satyajit
                             Bahir</span>
 
-                    </div>
+                    </div> -->
 
                     <div class="flex justify-center gap-4 mb-3">
                         <a href="#" class="text-blue-600 hover:text-blue-800 transition">
@@ -148,9 +172,9 @@
 
     <!-- Add/Edit Product Modal -->
     <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+        <div class="bg-white rounded-lg p-4 lg:p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-gray-800" id="modalTitle">Add New Product</h3>
+                <h3 class="text-xl lg:text-2xl font-bold text-gray-800" id="modalTitle">Add New Product</h3>
                 <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-2xl"></i>
                 </button>
@@ -159,14 +183,14 @@
                 <input type="hidden" id="productId">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Product Name *</label>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Product Name *</label>
                         <input type="text" id="productName" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Category *</label>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Category *</label>
                         <select id="productCategory" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
                             <option value="">Select Category</option>
                             <option value="Seeds">Seeds</option>
                             <option value="Fertilizers">Fertilizers</option>
@@ -180,38 +204,82 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Company *</label>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Company *</label>
                         <input type="text" id="productCompany" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Packing *</label>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Packing *</label>
                         <input type="text" id="productPacking" required placeholder="e.g., 1kg, 500g"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Price (₹) *</label>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Price (₹) *</label>
                         <input type="number" id="productPrice" required step="0.01" min="0"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Stock Quantity *</label>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Stock Quantity *</label>
                         <input type="number" id="productStock" required min="0"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
                     </div>
                 </div>
-                <div class="mt-6 flex justify-end gap-4">
+                <div class="mt-6 flex flex-col sm:flex-row justify-end gap-3">
                     <button type="button" onclick="closeModal()"
-                        class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">Cancel</button>
+                        class="px-4 lg:px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm order-2 sm:order-1">Cancel</button>
                     <button type="submit"
-                        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Save
+                        class="px-4 lg:px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm order-1 sm:order-2">Save
                         Product</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <div id="deleteProductModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-4 lg:p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div class="flex items-center mb-4">
+                <div class="bg-red-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg lg:text-2xl font-bold text-red-600">Delete Product</h3>
+            </div>
+            <p class="text-gray-700 mb-2 text-sm lg:text-lg">Are you sure you want to delete this product?</p>
+            <p class="text-red-600 font-semibold mb-6 text-sm">⚠️ This action cannot be undone!</p>
+            <div id="productInfo" class="bg-gray-50 p-3 rounded mb-6 text-xs lg:text-sm"></div>
+            <div class="flex flex-col sm:flex-row justify-end gap-3">
+                <button onclick="closeDeleteProductModal()"
+                    class="px-4 lg:px-6 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-semibold text-sm order-2 sm:order-1">
+                    Cancel
+                </button>
+                <button onclick="confirmDeleteProduct()"
+                    class="px-4 lg:px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold text-sm order-1 sm:order-2">
+                    <i class="fas fa-trash mr-2"></i>Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const body = document.body;
+
+        mobileMenuToggle?.addEventListener('click', function () {
+            sidebar.classList.toggle('-translate-x-full');
+            body.classList.toggle('sidebar-open');
+        });
+
+        // Close sidebar when a link is clicked
+        const navLinks = sidebar?.querySelectorAll('a');
+        navLinks?.forEach(link => {
+            link.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                body.classList.remove('sidebar-open');
+            });
+        });
+
         let products = JSON.parse(localStorage.getItem('products')) || [];
         let editingId = null;
 
@@ -224,24 +292,24 @@
 
             tbody.innerHTML = productsToShow.map(product => `
                 <tr class="border-b hover:bg-gray-50">
-                    <td class="py-4 px-6">${product.name}</td>
-                    <td class="py-4 px-6">
-                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">${product.category}</span>
+                    <td class="py-4 px-2 lg:px-6 text-sm">${product.name}</td>
+                    <td class="py-4 px-2 lg:px-6 hidden sm:table-cell text-sm">
+                        <span class="bg-blue-100 text-blue-800 px-2 lg:px-3 py-1 rounded-full text-xs">${product.category}</span>
                     </td>
-                    <td class="py-4 px-6">${product.company}</td>
-                    <td class="py-4 px-6">${product.packing}</td>
-                    <td class="py-4 px-6 text-center font-semibold">₹${product.price}</td>
-                    <td class="py-4 px-6 text-center">
-                        <span class="${product.stock < 10 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'} px-3 py-1 rounded-full font-semibold">
+                    <td class="py-4 px-2 lg:px-6 hidden md:table-cell text-sm">${product.company}</td>
+                    <td class="py-4 px-2 lg:px-6 hidden lg:table-cell text-sm">${product.packing}</td>
+                    <td class="py-4 px-2 lg:px-6 text-center font-semibold text-sm">₹${product.price}</td>
+                    <td class="py-4 px-2 lg:px-6 text-center text-sm">
+                        <span class="${product.stock < 10 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'} px-2 lg:px-3 py-1 rounded-full font-semibold text-xs">
                             ${product.stock}
                         </span>
                     </td>
-                    <td class="py-4 px-6 text-center">
+                    <td class="py-4 px-2 lg:px-6 text-center text-sm">
                         <button onclick="editProduct('${product.id}')" class="text-blue-600 hover:text-blue-800 mr-3">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-edit text-sm"></i>
                         </button>
-                        <button onclick="deleteProduct('${product.id}')" class="text-red-600 hover:text-red-800">
-                            <i class="fas fa-trash"></i>
+                        <button onclick="deleteProduct('${product.id}','${product.name}' )" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash text-sm"></i>
                         </button>
                     </td>
                 </tr>
@@ -305,14 +373,42 @@
             }
         }
 
-        function deleteProduct(id) {
-            if (confirm('Are you sure you want to delete this product?')) {
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('products', JSON.stringify(products));
-                displayProducts();
-                alert('Product deleted successfully!');
-            }
+        // Show the Delete Product Modal
+        function openDeleteProductModal(productInfoHtml) {
+            document.getElementById('deleteProductModal').style.display = 'flex';
+            document.getElementById('productInfo').innerHTML = productInfoHtml; // Set product info/details
         }
+
+        // Function to close the Delete Product Modal
+        function closeDeleteProductModal() {
+            document.getElementById('deleteProductModal').style.display = 'none';
+        }
+
+        // Function to open modal by passing product details (called from delete button)
+        function deleteProduct(productId, productName) {
+            const productInfoHtml = `ID: ${productId} <br> Name: ${productName}`;
+            openDeleteProductModal(productInfoHtml);
+        }
+
+        // Function to confirm deletion (replace with actual delete logic)
+        function confirmDeleteProduct() {
+
+            console.log('Deleting product...');
+
+            // After deletion, close the modal
+            closeDeleteProductModal();
+
+            // Optionally, refresh product list or show success notification
+        }
+
+        // Optional: Close modal when clicking outside modal content
+        window.onclick = function (event) {
+            const modal = document.getElementById('deleteProductModal');
+            if (event.target === modal) {
+                closeDeleteProductModal();
+            }
+        };
+
 
         function searchProducts() {
             const searchTerm = document.getElementById('searchProduct').value.toLowerCase();
